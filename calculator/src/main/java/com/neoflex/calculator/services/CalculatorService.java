@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -87,6 +89,9 @@ public class CalculatorService {
         offers.add(loanOfferWithInsuranceWithSalaryClient);
 
         List<LoanOfferDto> loanOfferDtos = converter.convertListLoanOfferToListLoanOfferDto(offers);
+
+        // сортировка по итоговой ставке (от меньшей ставки к большей)
+        loanOfferDtos.sort(Comparator.comparing(LoanOfferDto::getRate));
 
         log.info("loanOfferDtos - {}", loanOfferDtos);
         return loanOfferDtos;

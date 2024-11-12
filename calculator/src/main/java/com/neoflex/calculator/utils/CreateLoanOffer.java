@@ -35,13 +35,13 @@ public class CreateLoanOffer {
                 .add(getAmountOfIsInsuranceEnabled(isInsuranceEnabled));
     }
 
+    // страховка
     private BigDecimal getAmountOfIsInsuranceEnabled(Boolean isInsuranceEnabled) {
         return isInsuranceEnabled ? insurance : new BigDecimal("0");
     }
 
     // уменьшение ставки в зависимости от isInsuranceEnabled, isInsuranceEnabled
     public BigDecimal annualInterestRateCalculate(Boolean isInsuranceEnabled, Boolean isSalaryClient) {
-        System.out.println(isSalaryClient);
         //isInsuranceEnabled  - true, isInsuranceEnabled - true
         if (isInsuranceEnabled & isSalaryClient)
             return annualInterestRate.subtract(interestrateIsInsuranceEnabled).subtract(interestrateIsSalaryClient);
@@ -54,7 +54,7 @@ public class CreateLoanOffer {
         return annualInterestRate;
     }
 
-
+// Расчет ежемесячного платежа
 //    M = P ⋅ r(1 + r)ⁿ / (1 + r)ⁿ - 1
 // numerator -     P ⋅ r(1 + r)ⁿ
 // denominator -   (1 + r)ⁿ - 1
@@ -62,7 +62,6 @@ public class CreateLoanOffer {
 //  P  — сумма кредита (основной долг),
 //  r  — месячная процентная ставка (годовая ставка деленная на 12 и переведенная в десятичную форму),
 //  n  — общее количество платежей (количество месяцев).
-
     public BigDecimal getMonthlyPayment(BigDecimal requestedAmount,
                                         Integer term,
                                         Boolean isInsuranceEnabled,
