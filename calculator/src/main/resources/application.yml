@@ -1,0 +1,14 @@
+logging:
+  file:
+    name: myapp.log
+  logback:
+    rollingpolicy:
+      max-file-size: 1MB
+      max-history: 10
+
+application:
+  bank:
+    interestrate: 10.5
+    interestrateIsInsuranceEnabled: 2
+    interestrateIsSalaryClient: 1
+    insurance: 50000
