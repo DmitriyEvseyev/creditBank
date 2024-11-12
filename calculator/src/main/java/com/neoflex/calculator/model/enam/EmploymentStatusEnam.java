@@ -1,5 +1,9 @@
 package com.neoflex.calculator.model.enam;
 
-public class EmploymentStatusEnam {
-    // todo EmploymentStatusEnam
+public enum EmploymentStatusEnam {
+
+    UNEMPLOYED,
+    SELF_EMPLOYED,
+    BUSINESS_OWNER
+
 }

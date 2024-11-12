@@ -22,7 +22,7 @@ public class LoanStatementRequestDto implements Serializable {
     @NotNull(message = "Loan amount cannot be null")
     private BigDecimal amount;
 
-    @NotNull(message = "Term amount cannot be null")
+    @NotNull(message = "Term cannot be null")
     private Integer term;
 
     @Size(min = 2, max = 30, message = "FirstName should be between 2 and 30 characters.")

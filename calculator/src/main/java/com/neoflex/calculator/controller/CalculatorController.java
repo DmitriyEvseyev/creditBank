@@ -1,7 +1,9 @@
 package com.neoflex.calculator.controller;
 
+import com.neoflex.calculator.model.dto.CreditDto;
 import com.neoflex.calculator.model.dto.LoanOfferDto;
 import com.neoflex.calculator.model.dto.LoanStatementRequestDto;
+import com.neoflex.calculator.model.dto.ScoringDataDto;
 import com.neoflex.calculator.services.CalculatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +32,10 @@ public class CalculatorController {
     }
 
     @PostMapping("/calc")
-    public ResponseEntity<List<LoanOfferDto>> calculateOffersCalc(@RequestBody LoanStatementRequestDto loanStatementRequestDto) {
-        List<LoanOfferDto> offers = new ArrayList<>();
+    public ResponseEntity<CreditDto> calculateOffersCalc(@RequestBody ScoringDataDto scoringDataDto) {
+        CreditDto creditDto = new CreditDto();
 
-        // todo написать
 
-        return ResponseEntity.ok(offers);
+        return ResponseEntity.ok(creditDto);
     }
 }

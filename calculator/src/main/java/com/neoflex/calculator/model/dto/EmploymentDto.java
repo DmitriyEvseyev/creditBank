@@ -3,6 +3,7 @@ package com.neoflex.calculator.model.dto;
 import com.neoflex.calculator.model.enam.EmploymentStatusEnam;
 import com.neoflex.calculator.model.enam.PositionEnam;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -31,10 +32,10 @@ public class EmploymentDto {
     @NotNull(message = "Position cannot be null")
     private PositionEnam position;
 
-    @Size(min = 1, message = "The total work experience should be a year or more.")
-    private Integer workExperienceTotal;
+    @Positive(message = "The total work experience should be greater than zero.")
+    private Integer workExperienceTotal; // месяцы
 
-    @PositiveOrZero(message = "work Experience Current should be greater than zero.")
-    private Integer workExperienceCurrent;
+    @Positive (message = "work Experience Current should be greater than zero.")
+    private Integer workExperienceCurrent; // месяцы
 
 }
