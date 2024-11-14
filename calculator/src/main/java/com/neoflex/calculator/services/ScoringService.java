@@ -57,7 +57,7 @@ public class ScoringService {
         this.converter = converter;
     }
 
-    public BigDecimal getFinalannualInterestRate(ScoringDataDto scoringDataDto) throws ScoringExeption {
+    public BigDecimal getFinalannualInterestRate(ScoringDataDto scoringDataDto) {
         ScoringData scoringData = converter.convertScoringDataDtoToScoringData(scoringDataDto);
 
         if (estimateSalary(scoringData.getAmount(), scoringData.getEmployment().getSalary()) == 1)
@@ -81,7 +81,7 @@ public class ScoringService {
 
 
     //расчет % в зависимости от статуса работотника
-    public BigDecimal calculateRateEmploymentStatus(EmploymentStatusEnam employmentStatusEnam) throws ScoringExeption {
+    public BigDecimal calculateRateEmploymentStatus(EmploymentStatusEnam employmentStatusEnam) {
 //        if (employmentStatusEnam.equals(EmploymentStatusEnam.UNEMPLOYED))
 //            throw new ScoringExeption("employmentStatus - UNEMPLOYED");
 //        if (employmentStatusEnam.equals(EmploymentStatusEnam.SELF_EMPLOYED))
@@ -90,9 +90,10 @@ public class ScoringService {
         switch (employmentStatusEnam) {
             case UNEMPLOYED -> throw new ScoringExeption("employmentStatus - UNEMPLOYED");
             case SELF_EMPLOYED -> {
-                return calculateRateEmploymentStatus.subtract(selfEmployedRate);
+                calculateRateEmploymentStatus.subtract(selfEmployedRate);
             }
             case BUSINESS_OWNER -> {
+                log.info("calculateRateEmploymentStatus - {}", calculateRateEmploymentStatus.subtract(businessOwnerRate));
                 return calculateRateEmploymentStatus.subtract(businessOwnerRate);
             }
         }

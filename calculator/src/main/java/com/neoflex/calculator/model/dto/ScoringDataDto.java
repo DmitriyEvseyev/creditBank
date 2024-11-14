@@ -3,6 +3,7 @@ package com.neoflex.calculator.model.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.neoflex.calculator.model.enam.GenderEnam;
 import com.neoflex.calculator.model.enam.MaritalStatusEnam;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -26,7 +27,7 @@ public class ScoringDataDto implements Serializable {
     @NotNull(message = "Term amount cannot be null")
     private Integer term;
 
-    @Size(min = 2, max = 30, message = "FirstName should be between 2 and 30 characters.")
+    @NotEmpty
     private String firstName;
 
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters.")

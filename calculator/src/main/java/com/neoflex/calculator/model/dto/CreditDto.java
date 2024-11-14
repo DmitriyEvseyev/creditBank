@@ -2,6 +2,7 @@ package com.neoflex.calculator.model.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -12,7 +13,8 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 @ToString
-public class CreditDto {
+public class CreditDto implements Serializable
+{
     @NotNull(message = "Loan amount cannot be null")
     private BigDecimal amount;
 

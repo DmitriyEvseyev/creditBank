@@ -1,6 +1,5 @@
 package com.neoflex.calculator.model.dto;
 
-
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -14,13 +13,28 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @Builder
 @ToString
+//Элемент графика платежей
 public class PaymentScheduleElementDto {
-    @NotNull(message = "PaymentDate cannot be null")
-    private LocalDate paymentDate; // Дата платежа
+    @NotNull(message = "Number cannot be null")
+    private Integer number;
 
-    @NotNull(message = "PaymentAmount cannot be null")
-    private BigDecimal paymentAmount; // Сумма платежа
+    @NotNull(message = "date cannot be null")
+    private LocalDate date;
 
-    @NotNull(message = "RemainingBalance cannot be null")
-    private BigDecimal remainingBalance; // Оставшаяся задолженность
+    // общая сумма платежа, которую необходимо выплатить
+    @NotNull(message = "totalPayment cannot be null")
+    private BigDecimal totalPayment;
+
+    // сумма, которая идет на уплату процентов по кредиту
+    @NotNull(message = "interestPayment cannot be null")
+    private BigDecimal interestPayment;
+
+    //сумма, которая идет на погашение основного долга
+    @NotNull(message = "debtPayment cannot be null")
+    private BigDecimal debtPayment;
+
+    // остаток долга, который еще нужно выплатить после произведенных платежей.
+    @NotNull(message = "remainingDebt cannot be null")
+    private BigDecimal remainingDebt;
+
 }
