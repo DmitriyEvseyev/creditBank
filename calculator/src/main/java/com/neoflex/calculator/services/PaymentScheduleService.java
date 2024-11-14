@@ -10,22 +10,30 @@ import java.time.LocalDate;
 public class PaymentScheduleService {
 
 
-    //    Сначала считаем проценты:
+    //сумма, которая идет на погашение основного долга
+    private BigDecimal getDebtPayment (BigDecimal amount,
+                                       BigDecimal monthlyPayment,
+                                       ) {
+
+        return monthlyPayment.subtract(getInterestPayment())
+    }
+
+
+
+    //    Сначала считаем проценты (сумма, которая идет на уплату процентов по кредиту):
     //    Остаток долга × Процентная ставка × Количество дней в месяце / кол. дней в году
     private BigDecimal getInterestPayment(BigDecimal remainingDebt,
-                                          BigDecimal annualInterestRate,
-                                          Integer term,
-                                          BigDecimal monthlyPayment) {
+                                          BigDecimal annualInterestRate) {
         return remainingDebt.multiply(annualInterestRate)
                 .multiply(new BigDecimal(getDaysInMonth()))
                 .divide(new BigDecimal(getDaysInYear()), 2, RoundingMode.HALF_UP);
 
     }
 
-    // дата первого платежа
-    private LocalDate getFirstDatePayment() {
+    // дата платежа, начало последний день следующего месяца
+    public LocalDate getDatePayment(int count) {
         LocalDate currentDate = LocalDate.now();
-        int monthOfFirstPayment = currentDate.plusMonths(1).getMonthValue();
+        int monthOfFirstPayment = currentDate.plusMonths(count).getMonthValue();
         return LocalDate.of(currentDate.getYear(),
                 monthOfFirstPayment,
                 getDaysInMonth());

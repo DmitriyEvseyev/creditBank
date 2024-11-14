@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -25,7 +24,7 @@ public class ScoringDataDto implements Serializable {
     private BigDecimal amount;
 
     @NotNull(message = "Term amount cannot be null")
-    private Integer term;
+    private Integer term; // года
 
     @NotEmpty
     private String firstName;

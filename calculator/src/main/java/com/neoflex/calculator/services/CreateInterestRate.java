@@ -19,7 +19,7 @@ import java.time.Period;
 
 @Service
 @Slf4j
-public class ScoringService {
+public class CreateInterestRate {
     @Value("${application.bank.interestrate}")
     private BigDecimal annualInterestRate;
 
@@ -53,7 +53,7 @@ public class ScoringService {
     private final Converter converter;
 
     @Autowired
-    public ScoringService(Converter converter) {
+    public CreateInterestRate(Converter converter) {
         this.converter = converter;
     }
 
@@ -82,10 +82,6 @@ public class ScoringService {
 
     //расчет % в зависимости от статуса работотника
     public BigDecimal calculateRateEmploymentStatus(EmploymentStatusEnam employmentStatusEnam) {
-//        if (employmentStatusEnam.equals(EmploymentStatusEnam.UNEMPLOYED))
-//            throw new ScoringExeption("employmentStatus - UNEMPLOYED");
-//        if (employmentStatusEnam.equals(EmploymentStatusEnam.SELF_EMPLOYED))
-//            return  annualInterestRate.subtract(selfEmployedRate);
         BigDecimal calculateRateEmploymentStatus = new BigDecimal(0);
         switch (employmentStatusEnam) {
             case UNEMPLOYED -> throw new ScoringExeption("employmentStatus - UNEMPLOYED");
