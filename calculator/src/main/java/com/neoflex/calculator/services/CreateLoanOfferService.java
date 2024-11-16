@@ -1,14 +1,15 @@
-package com.neoflex.calculator.utils;
+package com.neoflex.calculator.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
 
-@Component
-public class CreateLoanOffer {
+@Service
+public class CreateLoanOfferService {
     @Value("${application.bank.interestrate}")
     private BigDecimal annualInterestRate;
 
@@ -31,7 +32,7 @@ public class CreateLoanOffer {
                                      Boolean isSalaryClient) {
 
         return getMonthlyPayment(requestedAmount, term, isInsuranceEnabled, isSalaryClient)
-                .multiply(new BigDecimal(term * 12))
+                .multiply(new BigDecimal(term))
                 .add(getAmountOfIsInsuranceEnabled(isInsuranceEnabled));
     }
 
@@ -69,8 +70,8 @@ public class CreateLoanOffer {
         // Расчет ежемесячной процентной ставки
         BigDecimal monthlyInterestRate = annualInterestRateCalculate(isInsuranceEnabled, isSalaryClient)
                 .divide(new BigDecimal("1200"), 5, RoundingMode.HALF_UP);
-        // Общее количество платежей, учитывая, что term в годах
-        int totalPayments = term * 12;
+        // Общее количество платежей, учитывая, что term в мес.
+        int totalPayments = term;
 
         BigDecimal numerator = requestedAmount.multiply(monthlyInterestRate).multiply(BigDecimal.ONE.add(monthlyInterestRate).pow(totalPayments));
         BigDecimal denominator = BigDecimal.ONE.add(monthlyInterestRate).pow(totalPayments).subtract(BigDecimal.ONE);

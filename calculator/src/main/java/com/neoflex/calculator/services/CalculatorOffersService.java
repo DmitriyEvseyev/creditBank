@@ -5,27 +5,25 @@ import com.neoflex.calculator.model.LoanStatementRequest;
 import com.neoflex.calculator.model.dto.LoanOfferDto;
 import com.neoflex.calculator.model.dto.LoanStatementRequestDto;
 import com.neoflex.calculator.utils.Converter;
-import com.neoflex.calculator.utils.CreateLoanOffer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 @Service
 @Slf4j
-public class CalculatorService {
+public class CalculatorOffersService {
     private final Converter converter;
-    private final CreateLoanOffer createOffer;
+    private final CreateLoanOfferService createOffer;
 
     @Autowired
-    public CalculatorService(Converter converter, CreateLoanOffer createLoanOffer) {
+    public CalculatorOffersService(Converter converter, CreateLoanOfferService createLoanOfferService) {
         this.converter = converter;
-        this.createOffer = createLoanOffer;
+        this.createOffer = createLoanOfferService;
     }
 
     public List<LoanOfferDto> calculateOffers(LoanStatementRequestDto loanStatementRequestDto) {

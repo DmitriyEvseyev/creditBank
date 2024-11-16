@@ -19,7 +19,7 @@ import java.time.Period;
 
 @Service
 @Slf4j
-public class CreateInterestRate {
+public class CreateInterestRateService {
     @Value("${application.bank.interestrate}")
     private BigDecimal annualInterestRate;
 
@@ -53,7 +53,7 @@ public class CreateInterestRate {
     private final Converter converter;
 
     @Autowired
-    public CreateInterestRate(Converter converter) {
+    public CreateInterestRateService(Converter converter) {
         this.converter = converter;
     }
 
@@ -86,10 +86,13 @@ public class CreateInterestRate {
         switch (employmentStatusEnam) {
             case UNEMPLOYED -> throw new ScoringExeption("employmentStatus - UNEMPLOYED");
             case SELF_EMPLOYED -> {
-                calculateRateEmploymentStatus.subtract(selfEmployedRate);
+                log.info("calculateRateEmploymentStatus/ SELF_EMPLOYED - {}",
+                        calculateRateEmploymentStatus.subtract(selfEmployedRate));
+                return calculateRateEmploymentStatus.subtract(selfEmployedRate);
             }
             case BUSINESS_OWNER -> {
-                log.info("calculateRateEmploymentStatus - {}", calculateRateEmploymentStatus.subtract(businessOwnerRate));
+                log.info("calculateRateEmploymentStatus/ BUSINESS_OWNER - {}",
+                        calculateRateEmploymentStatus.subtract(businessOwnerRate));
                 return calculateRateEmploymentStatus.subtract(businessOwnerRate);
             }
         }
@@ -102,12 +105,18 @@ public class CreateInterestRate {
         BigDecimal calculateRatePosition = new BigDecimal(0);
         switch (positionEnam) {
             case JUNIOR -> {
+                log.info("calculateRatePosition/ JUNIOR - {}",
+                        calculateRatePosition.subtract(juniorRate));
                 return calculateRatePosition.subtract(juniorRate);
             }
             case MIDDLE -> {
+                log.info("calculateRatePosition/ MIDDLE - {}",
+                        calculateRatePosition.subtract(middleRate));
                 return calculateRatePosition.subtract(middleRate);
             }
             case SENIOR -> {
+                log.info("calculateRatePosition/ SENIOR - {}",
+                        calculateRatePosition.subtract(seniorRate));
                 return calculateRatePosition.subtract(seniorRate);
             }
         }
@@ -117,7 +126,9 @@ public class CreateInterestRate {
 
     //оценка зарплаты * 24 (1 - amount больше)
     public Integer estimateSalary(BigDecimal amount, BigDecimal salary) {
-        return amount.compareTo(salary.multiply(new BigDecimal(24)));
+        Integer estimateSalary = amount.compareTo(salary.multiply(new BigDecimal(24)));
+        log.info("estimateSalary - {}", estimateSalary);
+        return estimateSalary;
     }
 
     // расчет % в зависимости семейного положения
@@ -125,9 +136,13 @@ public class CreateInterestRate {
         BigDecimal calculateRateMaritalStatus = new BigDecimal(0);
         switch (maritalStatusEnam) {
             case MARRIED -> {
+                log.info("calculateRateMaritalStatus/ MARRIED - {}",
+                        calculateRateMaritalStatus.subtract(marriedRate));
                 return calculateRateMaritalStatus.subtract(marriedRate);
             }
             case SINGLE -> {
+                log.info("calculateRateMaritalStatus/ SINGLE - {}",
+                        calculateRateMaritalStatus.subtract(singleRate));
                 return calculateRateMaritalStatus.subtract(singleRate);
             }
         }
@@ -138,7 +153,9 @@ public class CreateInterestRate {
     //оценка зарплаты от возраста. Возраст менее 20 или более 65 лет → отказ
     public Boolean estimateAge(LocalDate birthdate) {
         int age = Period.between(birthdate, LocalDate.now()).getYears();
-        return age > 20 & age < 65;
+        Boolean estimateAge = age > 20 & age < 65;
+        log.info("estimateAge - {}", estimateAge);
+        return estimateAge;
     }
 
     // расчет % в зависимости семейного положения
@@ -147,13 +164,19 @@ public class CreateInterestRate {
         switch (genderEnam) {
             case MALE -> {
                 int age = Period.between(birthdate, LocalDate.now()).getYears();
-                if (age > 30 & age < 55)
+                if (age > 30 & age < 55) {
+                    log.info("calculateRateGengerAngAge/ MALE - {}",
+                            calculateRateGengerAngAge.subtract(male30_55));
                     return calculateRateGengerAngAge.subtract(male30_55);
+                }
             }
             case FEMALE -> {
                 int age = Period.between(birthdate, LocalDate.now()).getYears();
-                if (age > 30 & age < 55)
+                if (age > 30 & age < 55) {
+                    log.info("calculateRateGengerAngAge/ FEMALE - {}",
+                            calculateRateGengerAngAge.subtract(female32_65));
                     return calculateRateGengerAngAge.subtract(female32_65);
+                }
             }
         }
         log.info("calculateRateGengerAngAge - {}", calculateRateGengerAngAge);
@@ -162,11 +185,15 @@ public class CreateInterestRate {
 
     //оценка -  cтаж работы: Общий стаж менее 18 месяцев → отказ
     public Boolean estimateWorkExperienceTotal(Integer workExperienceTotal) {
-        return workExperienceTotal >= 18;
+        Boolean estimateWorkExperienceTotal = workExperienceTotal >= 18;
+        log.info("estimateWorkExperienceTotal - {}", estimateWorkExperienceTotal);
+        return estimateWorkExperienceTotal;
     }
 
     //оценка -  Текущий стаж менее 3 месяцев → отказ
     public Boolean estimateWorkExperienceCurrent(Integer workExperienceCurrent) {
-        return workExperienceCurrent >= 3;
+        Boolean estimateWorkExperienceCurrent = workExperienceCurrent >= 3;
+        log.info("estimateWorkExperienceCurrent - {}", estimateWorkExperienceCurrent);
+        return estimateWorkExperienceCurrent;
     }
 }

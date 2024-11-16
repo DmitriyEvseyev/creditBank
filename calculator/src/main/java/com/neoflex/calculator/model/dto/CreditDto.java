@@ -19,7 +19,7 @@ public class CreditDto implements Serializable
     private BigDecimal amount;
 
     @NotNull(message = "Term cannot be null")
-    private Integer term;
+    private Integer term; // мес.
 
     @NotNull(message = "MonthlyPayment cannot be null")
     private BigDecimal monthlyPayment;

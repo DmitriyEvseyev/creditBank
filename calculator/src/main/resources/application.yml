@@ -8,7 +8,7 @@ logging:
 
 application:
   bank:
-    interestrate: 10.5
+    interestrate: 23
     interestrateIsInsuranceEnabled: 2
     interestrateIsSalaryClient: 1
     insurance: 50000
