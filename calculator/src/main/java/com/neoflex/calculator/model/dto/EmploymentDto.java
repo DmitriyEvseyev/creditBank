@@ -22,8 +22,7 @@ public class EmploymentDto {
     @NotNull(message = "EmploymentStatusEnam amount cannot be null")
     private EmploymentStatusEnam employmentStatus;
 
-    // todo длина ИНН
-    @NotNull(message = "EmployerINN cannot be null")
+    @Size(min = 10, max = 12, message = "EmployerINN should be between 10 and 12 characters.")
     private String employerINN;
 
     @NotNull(message = "Salary cannot be null")

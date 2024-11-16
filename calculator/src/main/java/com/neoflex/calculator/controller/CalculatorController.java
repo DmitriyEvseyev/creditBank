@@ -39,8 +39,6 @@ public class CalculatorController {
     @PostMapping("/calc")
     public ResponseEntity<CreditDto> calculateOffersCalc(@RequestBody @Valid ScoringDataDto scoringDataDto) {
         CreditDto creditDto = createCreditDtoService.createCreditDto(scoringDataDto);
-
-
         return ResponseEntity.ok(creditDto);
     }
 }
