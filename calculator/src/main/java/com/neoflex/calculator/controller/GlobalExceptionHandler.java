@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         // Извлекаем ошибки валидации
         ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
+                errors.put(error.getField(), "MethodArgumentNotValidException. " + error.getDefaultMessage())
         );
         log.error("MethodArgumentNotValidException. {}", ex.getMessage());
         // Возвращаем ошибки с кодом 400

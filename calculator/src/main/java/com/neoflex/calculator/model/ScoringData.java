@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Builder
 @ToString
 public class ScoringData {
+
     private BigDecimal amount;
     private Integer term;
     private String firstName;
