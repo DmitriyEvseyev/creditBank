@@ -7,6 +7,7 @@ import com.neoflex.calculator.model.enumDto.EmploymentStatusEnum;
 import com.neoflex.calculator.model.enumDto.GenderEnum;
 import com.neoflex.calculator.model.enumDto.MaritalStatusEnum;
 import com.neoflex.calculator.model.enumDto.PositionEnum;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.time.Period;
 
 @Service
 @Slf4j
+@Data
 public class CreateInterestRateService {
     @Value("${application.bank.interestrate}")
     private BigDecimal annualInterestRate;
@@ -43,7 +45,7 @@ public class CreateInterestRateService {
     private BigDecimal singleRate;
 
     @Value("${application.bank.genderAndAgeRate.male30_55}")
-    private BigDecimal male30_55;
+    BigDecimal male30_55;
 
     @Value("${application.bank.genderAndAgeRate.female32_65}")
     private BigDecimal female32_65;

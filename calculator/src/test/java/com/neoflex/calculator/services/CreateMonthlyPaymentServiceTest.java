@@ -21,13 +21,10 @@ public class CreateMonthlyPaymentServiceTest {
         BigDecimal amount = new BigDecimal("100000");
         BigDecimal rate = new BigDecimal("12");
         Integer term = 36;
-
         // Ожидаемый результат
         BigDecimal expectedMonthlyPayment = new BigDecimal("3321.43");
-
         // Выполнение метода
         BigDecimal actualMonthlyPayment = createMonthlyPaymentService.getMonthlyPayment(amount, rate, term);
-
         // Проверка результата
         assertEquals(expectedMonthlyPayment, actualMonthlyPayment);
     }
