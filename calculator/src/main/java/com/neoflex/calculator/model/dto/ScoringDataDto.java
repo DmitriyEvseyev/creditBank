@@ -1,8 +1,8 @@
 package com.neoflex.calculator.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.neoflex.calculator.model.enam.GenderEnam;
-import com.neoflex.calculator.model.enam.MaritalStatusEnam;
+import com.neoflex.calculator.model.enumDto.GenderEnum;
+import com.neoflex.calculator.model.enumDto.MaritalStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
@@ -14,13 +14,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Builder
-@ToString
 @Schema(description = "Сущность Оценочные данные")
 public class ScoringDataDto implements Serializable {
 
@@ -48,7 +45,7 @@ public class ScoringDataDto implements Serializable {
 
     @Schema(description = "пол")
     @NotNull(message = "Gender amount cannot be null")
-    private GenderEnam gender;
+    private GenderEnum gender;
 
     @Schema(description = "дата рождения", examples = "1995-10-25")
     @NotNull(message = "birthdate cannot be null")
@@ -76,7 +73,7 @@ public class ScoringDataDto implements Serializable {
 
     @Schema(description = "семейное положение")
     @NotNull(message = "maritalStatus amount cannot be null")
-    private MaritalStatusEnam maritalStatus;
+    private MaritalStatusEnum maritalStatus;
 
     @Schema(description = "зависимая сумма")
     @NotNull(message = "DependentAmount cannot be null")

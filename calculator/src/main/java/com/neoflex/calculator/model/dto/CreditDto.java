@@ -10,13 +10,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Builder
-@ToString
 @Schema(description = "Сущность кредит")
 public class CreditDto implements Serializable {
 

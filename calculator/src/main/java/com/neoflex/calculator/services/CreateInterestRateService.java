@@ -1,15 +1,13 @@
 package com.neoflex.calculator.services;
 
 import com.neoflex.calculator.exeption.ScoringExeption;
-import com.neoflex.calculator.model.ScoringData;
+
 import com.neoflex.calculator.model.dto.ScoringDataDto;
-import com.neoflex.calculator.model.enam.EmploymentStatusEnam;
-import com.neoflex.calculator.model.enam.GenderEnam;
-import com.neoflex.calculator.model.enam.MaritalStatusEnam;
-import com.neoflex.calculator.model.enam.PositionEnam;
-import com.neoflex.calculator.utils.Converter;
+import com.neoflex.calculator.model.enumDto.EmploymentStatusEnum;
+import com.neoflex.calculator.model.enumDto.GenderEnum;
+import com.neoflex.calculator.model.enumDto.MaritalStatusEnum;
+import com.neoflex.calculator.model.enumDto.PositionEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -50,78 +48,67 @@ public class CreateInterestRateService {
     @Value("${application.bank.genderAndAgeRate.female32_65}")
     private BigDecimal female32_65;
 
-    private final Converter converter;
-
-    @Autowired
-    public CreateInterestRateService(Converter converter) {
-        this.converter = converter;
-    }
-
     public BigDecimal getFinalannualInterestRate(ScoringDataDto scoringDataDto) {
-        ScoringData scoringData = converter.convertScoringDataDtoToScoringData(scoringDataDto);
 
-        if (estimateSalary(scoringData.getAmount(), scoringData.getEmployment().getSalary()) == 1)
+        if (estimateSalary(scoringDataDto.getAmount(), scoringDataDto.getEmployment().getSalary()) == 1)
             throw new ScoringExeption("estimateSalary * 24 - false");
-        if (!estimateAge(scoringData.getBirthdate()))
+        if (!estimateAge(scoringDataDto.getBirthdate()))
             throw new ScoringExeption("estimateAge - false");
-        if (!estimateWorkExperienceTotal(scoringData.getEmployment().getWorkExperienceTotal()))
+        if (!estimateWorkExperienceTotal(scoringDataDto.getEmployment().getWorkExperienceTotal()))
             throw new ScoringExeption("estimateWorkExperienceTotal - false");
-        if (!estimateWorkExperienceCurrent(scoringData.getEmployment().getWorkExperienceCurrent()))
+        if (!estimateWorkExperienceCurrent(scoringDataDto.getEmployment().getWorkExperienceCurrent()))
             throw new ScoringExeption("estimateWorkExperienceCurrent - false");
 
         // корретировка % ставки
-        BigDecimal correctRate = calculateRateEmploymentStatus(scoringData.getEmployment().getEmploymentStatus())
-                .add(calculateRatePosition(scoringData.getEmployment().getPosition()))
-                .add(calculateRateMaritalStatus(scoringData.getMaritalStatus()))
-                .add(calculateRateGengerAngAge(scoringData.getGender(), scoringData.getBirthdate()));
+        BigDecimal correctRate = calculateRateEmploymentStatus(scoringDataDto.getEmployment().getEmploymentStatus())
+                .add(calculateRatePosition(scoringDataDto.getEmployment().getPosition()))
+                .add(calculateRateMaritalStatus(scoringDataDto.getMaritalStatus()))
+                .add(calculateRateGengerAngAge(scoringDataDto.getGender(), scoringDataDto.getBirthdate()));
 
         log.info("correctRate - {}", correctRate);
-        return annualInterestRate.subtract(correctRate);
+        return annualInterestRate.add(correctRate);
     }
 
 
     //расчет % в зависимости от статуса работотника
-    public BigDecimal calculateRateEmploymentStatus(EmploymentStatusEnam employmentStatusEnam) {
-        BigDecimal calculateRateEmploymentStatus = new BigDecimal(0);
-        switch (employmentStatusEnam) {
+    public BigDecimal calculateRateEmploymentStatus(EmploymentStatusEnum employmentStatusEnum) {
+        switch (employmentStatusEnum) {
             case UNEMPLOYED -> throw new ScoringExeption("employmentStatus - UNEMPLOYED");
             case SELF_EMPLOYED -> {
-                log.info("calculateRateEmploymentStatus/ SELF_EMPLOYED - {}",
-                        calculateRateEmploymentStatus.subtract(selfEmployedRate));
-                return calculateRateEmploymentStatus.subtract(selfEmployedRate);
+                log.info("calculateRateEmploymentStatus/ SELF_EMPLOYED: {}", selfEmployedRate);
+                return selfEmployedRate;
             }
             case BUSINESS_OWNER -> {
-                log.info("calculateRateEmploymentStatus/ BUSINESS_OWNER - {}",
-                        calculateRateEmploymentStatus.subtract(businessOwnerRate));
-                return calculateRateEmploymentStatus.subtract(businessOwnerRate);
+                log.info("calculateRateEmploymentStatus/ BUSINESS_OWNER: {}", businessOwnerRate);
+                return businessOwnerRate;
+            }
+            default -> {
+                log.warn("Unknown EmploymentStatus: {}", employmentStatusEnum);
+                return BigDecimal.ZERO;
             }
         }
-        log.info("calculateRateEmploymentStatus - {}", calculateRateEmploymentStatus);
-        return calculateRateEmploymentStatus;
     }
 
     //расчет  % в зависимости от должности
-    public BigDecimal calculateRatePosition(PositionEnam positionEnam) {
-        BigDecimal calculateRatePosition = new BigDecimal(0);
-        switch (positionEnam) {
+    public BigDecimal calculateRatePosition(PositionEnum positionEnum) {
+        switch (positionEnum) {
             case JUNIOR -> {
-                log.info("calculateRatePosition/ JUNIOR - {}",
-                        calculateRatePosition.subtract(juniorRate));
-                return calculateRatePosition.subtract(juniorRate);
+                log.info("calculateRatePosition/ JUNIOR: {}", juniorRate);
+                return juniorRate;
             }
             case MIDDLE -> {
-                log.info("calculateRatePosition/ MIDDLE - {}",
-                        calculateRatePosition.subtract(middleRate));
-                return calculateRatePosition.subtract(middleRate);
+                log.info("calculateRatePosition/ MIDDLE: {}", middleRate);
+                return middleRate;
             }
             case SENIOR -> {
-                log.info("calculateRatePosition/ SENIOR - {}",
-                        calculateRatePosition.subtract(seniorRate));
-                return calculateRatePosition.subtract(seniorRate);
+                log.info("calculateRatePosition/ SENIOR: {}", seniorRate);
+                return seniorRate;
+            }
+            default -> {
+                log.warn("Unknown position: {}", positionEnum);
+                return BigDecimal.ZERO;
             }
         }
-        log.info("calculateRatePosition - {}", calculateRatePosition);
-        return calculateRatePosition;
     }
 
     //оценка зарплаты * 24 (1 - amount больше)
@@ -132,22 +119,21 @@ public class CreateInterestRateService {
     }
 
     // расчет % в зависимости семейного положения
-    public BigDecimal calculateRateMaritalStatus(MaritalStatusEnam maritalStatusEnam) {
-        BigDecimal calculateRateMaritalStatus = new BigDecimal(0);
-        switch (maritalStatusEnam) {
+    public BigDecimal calculateRateMaritalStatus(MaritalStatusEnum maritalStatusEnum) {
+        switch (maritalStatusEnum) {
             case MARRIED -> {
-                log.info("calculateRateMaritalStatus/ MARRIED - {}",
-                        calculateRateMaritalStatus.subtract(marriedRate));
-                return calculateRateMaritalStatus.subtract(marriedRate);
+                log.info("calculateRateMaritalStatus/ MARRIED: {}", marriedRate);
+                return marriedRate;
             }
             case SINGLE -> {
-                log.info("calculateRateMaritalStatus/ SINGLE - {}",
-                        calculateRateMaritalStatus.subtract(singleRate));
-                return calculateRateMaritalStatus.subtract(singleRate);
+                log.info("calculateRateMaritalStatus/ SINGLE: {}", singleRate);
+                return singleRate;
+            }
+            default -> {
+                log.warn("Unknown MaritalStatus: {}", maritalStatusEnum);
+                return BigDecimal.ZERO;
             }
         }
-        log.info("calculateRateMaritalStatus - {}", calculateRateMaritalStatus);
-        return calculateRateMaritalStatus;
     }
 
     //оценка зарплаты от возраста. Возраст менее 20 или более 65 лет → отказ
@@ -159,28 +145,29 @@ public class CreateInterestRateService {
     }
 
     // расчет % в зависимости семейного положения
-    public BigDecimal calculateRateGengerAngAge(GenderEnam genderEnam, LocalDate birthdate) {
-        BigDecimal calculateRateGengerAngAge = new BigDecimal(0);
-        switch (genderEnam) {
+    public BigDecimal calculateRateGengerAngAge(GenderEnum genderEnum, LocalDate birthdate) {
+        switch (genderEnum) {
             case MALE -> {
                 int age = Period.between(birthdate, LocalDate.now()).getYears();
                 if (age > 30 & age < 55) {
-                    log.info("calculateRateGengerAngAge/ MALE - {}",
-                            calculateRateGengerAngAge.subtract(male30_55));
-                    return calculateRateGengerAngAge.subtract(male30_55);
+                    log.info("calculateRateGengerAngAge/ MALE: {}", male30_55);
+                    return male30_55;
                 }
             }
             case FEMALE -> {
                 int age = Period.between(birthdate, LocalDate.now()).getYears();
                 if (age > 30 & age < 55) {
-                    log.info("calculateRateGengerAngAge/ FEMALE - {}",
-                            calculateRateGengerAngAge.subtract(female32_65));
-                    return calculateRateGengerAngAge.subtract(female32_65);
+                    log.info("calculateRateGengerAngAge/ FEMALE: {}", female32_65);
+                    return female32_65;
                 }
             }
+            default -> {
+                log.warn("Unknown genderEnam: {}", genderEnum);
+                return BigDecimal.ZERO;
+            }
         }
-        log.info("calculateRateGengerAngAge - {}", calculateRateGengerAngAge);
-        return calculateRateGengerAngAge;
+        log.info("calculateRateGenderAndAge - No applicable rate");
+        return BigDecimal.ZERO;
     }
 
     //оценка -  cтаж работы: Общий стаж менее 18 месяцев → отказ

@@ -1,29 +1,25 @@
 package com.neoflex.calculator.model.dto;
 
-import com.neoflex.calculator.model.enam.EmploymentStatusEnam;
-import com.neoflex.calculator.model.enam.PositionEnam;
+import com.neoflex.calculator.model.enumDto.EmploymentStatusEnum;
+import com.neoflex.calculator.model.enumDto.PositionEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Builder
-@ToString
 @Schema(description = "Сущноость Данные о трудоустройстве.")
 public class EmploymentDto {
 
     @Schema(description = "статус занятости")
     @NotNull(message = "EmploymentStatusEnam amount cannot be null")
-    private EmploymentStatusEnam employmentStatus;
+    private EmploymentStatusEnum employmentStatus;
 
     @Schema(description = "ИНН")
     @Size(min = 10, max = 12, message = "EmployerINN should be between 10 and 12 characters.")
@@ -35,7 +31,7 @@ public class EmploymentDto {
 
     @Schema(description = "должность")
     @NotNull(message = "Position cannot be null")
-    private PositionEnam position;
+    private PositionEnum position;
 
     @Schema(description = "общий стаж, в месяцах")
     @Positive(message = "The total work experience should be greater than zero.")

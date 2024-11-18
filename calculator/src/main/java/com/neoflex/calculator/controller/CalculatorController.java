@@ -21,7 +21,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/calculator")
-@Slf4j
 @Tag(name = "CalculatorController", description = "Кредитный калькулятор.")
 public class CalculatorController {
     private final CalculatorOffersService calculatorOffersService;

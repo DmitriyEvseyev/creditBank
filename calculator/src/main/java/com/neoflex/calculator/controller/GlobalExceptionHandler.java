@@ -22,11 +22,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity< Map<String, String>> handleHttpMessageNotReadable(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         // Извлекаем ошибки валидации
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), "MethodArgumentNotValidException. " + error.getDefaultMessage())
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), "MethodArgumentNotValidException. "
+                        + error.getDefaultMessage())
         );
         log.error("MethodArgumentNotValidException. {}", ex.getMessage());
-        // Возвращаем ошибки с кодом 400
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 

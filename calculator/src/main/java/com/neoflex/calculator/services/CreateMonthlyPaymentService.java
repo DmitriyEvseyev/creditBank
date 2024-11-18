@@ -33,3 +33,5 @@ public class CreateMonthlyPaymentService {
         // todo уточнить точность округления monthlyInterestRate
     }
 }
+
+

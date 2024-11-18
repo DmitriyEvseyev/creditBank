@@ -1,10 +1,7 @@
 package com.neoflex.calculator.services;
 
-import com.neoflex.calculator.model.LoanOffer;
-import com.neoflex.calculator.model.LoanStatementRequest;
 import com.neoflex.calculator.model.dto.LoanOfferDto;
 import com.neoflex.calculator.model.dto.LoanStatementRequestDto;
-import com.neoflex.calculator.utils.Converter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,25 +14,21 @@ import java.util.List;
 @Service
 @Slf4j
 public class CalculatorOffersService {
-    private final Converter converter;
     private final CreateLoanOfferService createOffer;
 
     @Autowired
-    public CalculatorOffersService(Converter converter, CreateLoanOfferService createLoanOfferService) {
-        this.converter = converter;
+    public CalculatorOffersService(CreateLoanOfferService createLoanOfferService) {
         this.createOffer = createLoanOfferService;
     }
 
     public List<LoanOfferDto> calculateOffers(LoanStatementRequestDto loanStatementRequestDto) {
-        LoanStatementRequest loanStatementRequest = converter
-                .convertLoanStatementRequestDtoToLoanStatementRequest(loanStatementRequestDto);
-        BigDecimal amount = loanStatementRequest.getAmount();
-        Integer term = loanStatementRequest.getTerm();
+        BigDecimal amount = loanStatementRequestDto.getAmount();
+        Integer term = loanStatementRequestDto.getTerm();
 
-        List<LoanOffer> offers = new ArrayList<>();
+        List<LoanOfferDto> loanOfferDtos = new ArrayList<>();
 
         // offer без страховки, без зарплатного клиента
-        LoanOffer loanOffer = LoanOffer.builder()
+        LoanOfferDto loanOffer = LoanOfferDto.builder()
                 .uuid(createOffer.generateUUID())
                 .requestedAmount(amount)
                 .totalAmount(createOffer.getTotalAmount(amount, term, false, false))
@@ -45,10 +38,10 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(false)
                 .isSalaryClient(false)
                 .build();
-        offers.add(loanOffer);
+        loanOfferDtos.add(loanOffer);
 
         // offer + страховка, -  зарплатный клиент
-        LoanOffer loanOfferWithInsurance = LoanOffer.builder()
+        LoanOfferDto loanOfferWithInsurance = LoanOfferDto.builder()
                 .uuid(createOffer.generateUUID())
                 .requestedAmount(amount)
                 .totalAmount(createOffer.getTotalAmount(amount, term, true, false))
@@ -58,10 +51,10 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(true)
                 .isSalaryClient(false)
                 .build();
-        offers.add(loanOfferWithInsurance);
+        loanOfferDtos.add(loanOfferWithInsurance);
 
         // offer  - страховка, +  зарплатный клиент
-        LoanOffer loanOfferWithSalaryClient = LoanOffer.builder()
+        LoanOfferDto loanOfferWithSalaryClient = LoanOfferDto.builder()
                 .uuid(createOffer.generateUUID())
                 .requestedAmount(amount)
                 .totalAmount(createOffer.getTotalAmount(amount, term, false, true))
@@ -71,10 +64,10 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(false)
                 .isSalaryClient(true)
                 .build();
-        offers.add(loanOfferWithSalaryClient);
+        loanOfferDtos.add(loanOfferWithSalaryClient);
 
         // offer  + страховка, +  зарплатный клиент
-        LoanOffer loanOfferWithInsuranceWithSalaryClient = LoanOffer.builder()
+        LoanOfferDto loanOfferWithInsuranceWithSalaryClient = LoanOfferDto.builder()
                 .uuid(createOffer.generateUUID())
                 .requestedAmount(amount)
                 .totalAmount(createOffer.getTotalAmount(amount, term, true, true))
@@ -84,9 +77,7 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(true)
                 .isSalaryClient(true)
                 .build();
-        offers.add(loanOfferWithInsuranceWithSalaryClient);
-
-        List<LoanOfferDto> loanOfferDtos = converter.convertListLoanOfferToListLoanOfferDto(offers);
+        loanOfferDtos.add(loanOfferWithInsuranceWithSalaryClient);
 
         // сортировка по итоговой ставке (от меньшей ставки к большей)
         loanOfferDtos.sort(Comparator.comparing(LoanOfferDto::getRate));

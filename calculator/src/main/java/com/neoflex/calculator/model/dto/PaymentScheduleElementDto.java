@@ -8,13 +8,10 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Builder
-@ToString
 @Schema(description = "Сущность График платежей")
 public class PaymentScheduleElementDto {
 
