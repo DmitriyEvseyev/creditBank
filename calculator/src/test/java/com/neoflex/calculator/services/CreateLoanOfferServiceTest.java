@@ -65,10 +65,10 @@ class CreateLoanOfferServiceTest {
 
     @Test
     public void testAnnualInterestRateCalculate() {
-        assertEquals(new BigDecimal("8.5"), createLoanOfferService.annualInterestRateCalculate(true, true));
-        assertEquals(new BigDecimal("9.0"), createLoanOfferService.annualInterestRateCalculate(true, false));
-        assertEquals(new BigDecimal("9.5"), createLoanOfferService.annualInterestRateCalculate(false, true));
-        assertEquals(new BigDecimal("10.0"), createLoanOfferService.annualInterestRateCalculate(false, false));
+        assertEquals(new BigDecimal("20"), createLoanOfferService.annualInterestRateCalculate(true, true));
+        assertEquals(new BigDecimal("21"), createLoanOfferService.annualInterestRateCalculate(true, false));
+        assertEquals(new BigDecimal("22"), createLoanOfferService.annualInterestRateCalculate(false, true));
+        assertEquals(new BigDecimal("23"), createLoanOfferService.annualInterestRateCalculate(false, false));
     }
 
     @Test
