@@ -1,5 +1,6 @@
 package com.neoflex.calculator.services;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.math.RoundingMode;
 import java.util.UUID;
 
 @Service
+@Data
 public class CreateLoanOfferService {
     @Value("${application.bank.interestrate}")
     private BigDecimal annualInterestRate;
@@ -41,7 +43,8 @@ public class CreateLoanOfferService {
     }
 
     // уменьшение ставки в зависимости от isInsuranceEnabled, isInsuranceEnabled
-    public BigDecimal annualInterestRateCalculate(Boolean isInsuranceEnabled, Boolean isSalaryClient) {
+    public BigDecimal annualInterestRateCalculate(Boolean isInsuranceEnabled,
+                                                  Boolean isSalaryClient) {
         //isInsuranceEnabled  - true, isInsuranceEnabled - true
         if (isInsuranceEnabled & isSalaryClient)
             return annualInterestRate.subtract(interestrateIsInsuranceEnabled).subtract(interestrateIsSalaryClient);

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,8 +26,6 @@ public class CalculatorOffersService {
         BigDecimal amount = loanStatementRequestDto.getAmount();
         Integer term = loanStatementRequestDto.getTerm();
 
-        List<LoanOfferDto> loanOfferDtos = new ArrayList<>();
-
         // offer без страховки, без зарплатного клиента
         LoanOfferDto loanOffer = LoanOfferDto.builder()
                 .uuid(createOffer.generateUUID())
@@ -38,7 +37,6 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(false)
                 .isSalaryClient(false)
                 .build();
-        loanOfferDtos.add(loanOffer);
 
         // offer + страховка, -  зарплатный клиент
         LoanOfferDto loanOfferWithInsurance = LoanOfferDto.builder()
@@ -51,7 +49,6 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(true)
                 .isSalaryClient(false)
                 .build();
-        loanOfferDtos.add(loanOfferWithInsurance);
 
         // offer  - страховка, +  зарплатный клиент
         LoanOfferDto loanOfferWithSalaryClient = LoanOfferDto.builder()
@@ -64,7 +61,6 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(false)
                 .isSalaryClient(true)
                 .build();
-        loanOfferDtos.add(loanOfferWithSalaryClient);
 
         // offer  + страховка, +  зарплатный клиент
         LoanOfferDto loanOfferWithInsuranceWithSalaryClient = LoanOfferDto.builder()
@@ -77,7 +73,12 @@ public class CalculatorOffersService {
                 .isInsuranceEnabled(true)
                 .isSalaryClient(true)
                 .build();
-        loanOfferDtos.add(loanOfferWithInsuranceWithSalaryClient);
+
+        List<LoanOfferDto> loanOfferDtos = new ArrayList<>(Arrays.asList(
+                loanOffer,
+                loanOfferWithInsurance,
+                loanOfferWithSalaryClient,
+                loanOfferWithInsuranceWithSalaryClient));
 
         // сортировка по итоговой ставке (от меньшей ставки к большей)
         loanOfferDtos.sort(Comparator.comparing(LoanOfferDto::getRate));
