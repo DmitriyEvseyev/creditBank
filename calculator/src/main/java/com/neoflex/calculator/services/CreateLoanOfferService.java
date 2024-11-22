@@ -13,13 +13,10 @@ import java.util.UUID;
 public class CreateLoanOfferService {
     @Value("${application.bank.interestrate}")
     private BigDecimal annualInterestRate;
-
     @Value("${application.bank.interestrateIsInsuranceEnabled}")
     private BigDecimal interestrateIsInsuranceEnabled;
-
     @Value("${application.bank.interestrateIsSalaryClient}")
     private BigDecimal interestrateIsSalaryClient;
-
     @Value("${application.bank.insurance}")
     private BigDecimal insurance;
 
@@ -31,7 +28,6 @@ public class CreateLoanOfferService {
                                      Integer term,
                                      Boolean isInsuranceEnabled,
                                      Boolean isSalaryClient) {
-
         return getMonthlyPayment(requestedAmount, term, isInsuranceEnabled, isSalaryClient)
                 .multiply(new BigDecimal(term))
                 .add(getAmountOfIsInsuranceEnabled(isInsuranceEnabled));
@@ -57,14 +53,6 @@ public class CreateLoanOfferService {
         return annualInterestRate;
     }
 
-// Расчет ежемесячного платежа
-//    M = P ⋅ r(1 + r)ⁿ / (1 + r)ⁿ - 1
-// numerator -     P ⋅ r(1 + r)ⁿ
-// denominator -   (1 + r)ⁿ - 1
-//    где:  M  — ежемесячный платеж,
-//  P  — сумма кредита (основной долг),
-//  r  — месячная процентная ставка (годовая ставка деленная на 12 и переведенная в десятичную форму),
-//  n  — общее количество платежей (количество месяцев).
     public BigDecimal getMonthlyPayment(BigDecimal requestedAmount,
                                         Integer term,
                                         Boolean isInsuranceEnabled,
@@ -74,12 +62,9 @@ public class CreateLoanOfferService {
                 .divide(new BigDecimal("1200"), 5, RoundingMode.HALF_UP);
         // Общее количество платежей, учитывая, что term в мес.
         int totalPayments = term;
-
         BigDecimal numerator = requestedAmount.multiply(monthlyInterestRate).multiply(BigDecimal.ONE.add(monthlyInterestRate).pow(totalPayments));
         BigDecimal denominator = BigDecimal.ONE.add(monthlyInterestRate).pow(totalPayments).subtract(BigDecimal.ONE);
         BigDecimal monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_UP);
-
         return monthlyPayment;
-        // todo уточнить точность округления monthlyInterestRate
     }
 }

@@ -1,7 +1,6 @@
 package com.neoflex.calculator.services;
 
 import com.neoflex.calculator.exeption.ScoringExeption;
-
 import com.neoflex.calculator.model.dto.ScoringDataDto;
 import com.neoflex.calculator.model.enumDto.EmploymentStatusEnum;
 import com.neoflex.calculator.model.enumDto.GenderEnum;
@@ -22,31 +21,22 @@ import java.time.Period;
 public class CreateInterestRateService {
     @Value("${application.bank.interestrate}")
     private BigDecimal annualInterestRate;
-
     @Value("${application.bank.employmentStatus.SELF_EMPLOYED}")
     private BigDecimal selfEmployedRate;
-
     @Value("${application.bank.employmentStatus.BUSINESS_OWNER}")
     private BigDecimal businessOwnerRate;
-
     @Value("${application.bank.position.JUNIOR}")
     private BigDecimal juniorRate;
-
     @Value("${application.bank.position.MIDDLE}")
     private BigDecimal middleRate;
-
     @Value("${application.bank.position.SENIOR}")
     private BigDecimal seniorRate;
-
     @Value("${application.bank.maritalStatus.MARRIED}")
     private BigDecimal marriedRate;
-
     @Value("${application.bank.maritalStatus.SINGLE}")
     private BigDecimal singleRate;
-
     @Value("${application.bank.genderAndAgeRate.male30_55}")
-    BigDecimal male30_55;
-
+    private BigDecimal male30_55;
     @Value("${application.bank.genderAndAgeRate.female32_65}")
     private BigDecimal female32_65;
 
@@ -70,7 +60,6 @@ public class CreateInterestRateService {
         log.info("correctRate - {}", correctRate);
         return annualInterestRate.add(correctRate);
     }
-
 
     //расчет % в зависимости от статуса работотника
     public BigDecimal calculateRateEmploymentStatus(EmploymentStatusEnum employmentStatusEnum) {

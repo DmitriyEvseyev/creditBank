@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 @Slf4j
 public class CreatePaymentScheduleElementDtoService {
-
     public List<PaymentScheduleElementDto> createPaymentScheduleElementDto(ScoringDataDto scoringDataDto,
                                                                            BigDecimal rate,
                                                                            BigDecimal monthlyPayment) {
@@ -24,7 +23,6 @@ public class CreatePaymentScheduleElementDtoService {
             BigDecimal interestPayment = getInterestPayment(totalPayment, rate, i);
             BigDecimal debtPayment = getDebtPayment(monthlyPayment, interestPayment);
             BigDecimal remainingDebt = getRemainingDebt(totalPayment, debtPayment);
-
             if (i == scoringDataDto.getTerm()) {
                 PaymentScheduleElementDto lastPaymentScheduleElementDto = PaymentScheduleElementDto.builder()
                         .number(i)

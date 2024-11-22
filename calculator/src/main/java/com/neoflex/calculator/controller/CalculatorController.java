@@ -9,7 +9,7 @@ import com.neoflex.calculator.services.CreateCreditDtoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,16 +20,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/calculator")
+@RequiredArgsConstructor
 @Tag(name = "CalculatorController", description = "Кредитный калькулятор.")
 public class CalculatorController {
     private final CalculatorOffersService calculatorOffersService;
     private final CreateCreditDtoService createCreditDtoService;
-
-    @Autowired
-    public CalculatorController(CalculatorOffersService calculatorOffersService, CreateCreditDtoService createCreditDtoService) {
-        this.calculatorOffersService = calculatorOffersService;
-        this.createCreditDtoService = createCreditDtoService;
-    }
 
     @PostMapping("/offers")
     @Operation(summary = "Создаётся 4 кредитных предложения ",
