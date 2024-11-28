@@ -1,0 +1,29 @@
+logging:
+  file:
+    name: myapp.log
+  logback:
+    rollingpolicy:
+      max-file-size: 1MB
+      max-history: 10
+
+application:
+  bank:
+    interestrate: 23
+    interestrateIsInsuranceEnabled: 2
+    interestrateIsSalaryClient: 1
+    insurance: 50000
+
+    employmentStatus:
+      SELF_EMPLOYED: -1
+      BUSINESS_OWNER: -2
+    position:
+      JUNIOR: -1
+      MIDDLE: -2
+      SENIOR: -3
+    maritalStatus:
+      MARRIED: -1
+      SINGLE: 1
+    genderAndAgeRate:
+      male30_55: -3
+      female32_65: -3
+

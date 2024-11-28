@@ -38,3 +38,4 @@ mvnw
 .gitattributes
 *.json
 *.log
+/testJson
