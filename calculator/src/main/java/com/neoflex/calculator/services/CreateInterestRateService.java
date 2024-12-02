@@ -23,18 +23,28 @@ public class CreateInterestRateService {
     private BigDecimal annualInterestRate;
     @Value("${application.bank.employmentStatus.SELF_EMPLOYED}")
     private BigDecimal selfEmployedRate;
+    @Value("${application.bank.employmentStatus.EMPLOYED}")
+    private BigDecimal employedRate;
     @Value("${application.bank.employmentStatus.BUSINESS_OWNER}")
     private BigDecimal businessOwnerRate;
-    @Value("${application.bank.position.JUNIOR}")
-    private BigDecimal juniorRate;
-    @Value("${application.bank.position.MIDDLE}")
-    private BigDecimal middleRate;
-    @Value("${application.bank.position.SENIOR}")
-    private BigDecimal seniorRate;
+    @Value("${application.bank.position.WORKER}")
+    private BigDecimal workerRate;
+    @Value("${application.bank.position.MID_MANAGER}")
+    private BigDecimal midManagerRate;
+    @Value("${application.bank.position.TOP_MANAGER}")
+    private BigDecimal topManagerRate;
+    @Value("${application.bank.position.OWNER}")
+    private BigDecimal ownerRate;
     @Value("${application.bank.maritalStatus.MARRIED}")
     private BigDecimal marriedRate;
+
+    @Value("${application.bank.maritalStatus.DIVORCED}")
+    private BigDecimal divorcedRate;
     @Value("${application.bank.maritalStatus.SINGLE}")
     private BigDecimal singleRate;
+
+    @Value("${application.bank.maritalStatus.WIDOW_WIDOWER}")
+    private BigDecimal widowWidowedRate;
     @Value("${application.bank.genderAndAgeRate.male30_55}")
     private BigDecimal male30_55;
     @Value("${application.bank.genderAndAgeRate.female32_65}")
@@ -69,6 +79,10 @@ public class CreateInterestRateService {
                 log.info("calculateRateEmploymentStatus/ SELF_EMPLOYED: {}", selfEmployedRate);
                 return selfEmployedRate;
             }
+            case EMPLOYED -> {
+                log.info("calculateRateEmploymentStatus/ EMPLOYED: {}", employedRate);
+                return selfEmployedRate;
+            }
             case BUSINESS_OWNER -> {
                 log.info("calculateRateEmploymentStatus/ BUSINESS_OWNER: {}", businessOwnerRate);
                 return businessOwnerRate;
@@ -83,17 +97,21 @@ public class CreateInterestRateService {
     //расчет  % в зависимости от должности
     public BigDecimal calculateRatePosition(PositionEnum positionEnum) {
         switch (positionEnum) {
-            case JUNIOR -> {
-                log.info("calculateRatePosition/ JUNIOR: {}", juniorRate);
-                return juniorRate;
+            case WORKER -> {
+                log.info("calculateRatePosition/ WORKER: {}", workerRate);
+                return workerRate;
             }
-            case MIDDLE -> {
-                log.info("calculateRatePosition/ MIDDLE: {}", middleRate);
-                return middleRate;
+            case MID_MANAGER -> {
+                log.info("calculateRatePosition/ MID_MANAGER: {}", midManagerRate);
+                return midManagerRate;
             }
-            case SENIOR -> {
-                log.info("calculateRatePosition/ SENIOR: {}", seniorRate);
-                return seniorRate;
+            case TOP_MANAGER -> {
+                log.info("calculateRatePosition/ TOP_MANAGER: {}", topManagerRate);
+                return topManagerRate;
+            }
+            case OWNER -> {
+                log.info("calculateRatePosition/ OWNER: {}", ownerRate);
+                return ownerRate;
             }
             default -> {
                 log.warn("Unknown position: {}", positionEnum);
@@ -116,9 +134,17 @@ public class CreateInterestRateService {
                 log.info("calculateRateMaritalStatus/ MARRIED: {}", marriedRate);
                 return marriedRate;
             }
+            case DIVORCED -> {
+                log.info("calculateRateMaritalStatus/ DIVORCED: {}", divorcedRate);
+                return divorcedRate;
+            }
             case SINGLE -> {
                 log.info("calculateRateMaritalStatus/ SINGLE: {}", singleRate);
                 return singleRate;
+            }
+            case WIDOW_WIDOWER -> {
+                log.info("calculateRateMaritalStatus/ WIDOW_WIDOWER: {}", widowWidowedRate);
+                return widowWidowedRate;
             }
             default -> {
                 log.warn("Unknown MaritalStatus: {}", maritalStatusEnum);
