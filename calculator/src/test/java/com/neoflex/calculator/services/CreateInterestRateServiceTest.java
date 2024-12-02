@@ -32,9 +32,9 @@ class CreateInterestRateServiceTest {
         rateService.setSelfEmployedRate(BigDecimal.valueOf(-1));
         rateService.setBusinessOwnerRate(BigDecimal.valueOf(-2));
 
-        rateService.setJuniorRate(BigDecimal.valueOf(-1));
-        rateService.setMiddleRate(BigDecimal.valueOf(-2));
-        rateService.setSeniorRate(BigDecimal.valueOf(-3));
+        rateService.setWorkerRate(BigDecimal.valueOf(-1));
+        rateService.setMidManagerRate(BigDecimal.valueOf(-2));
+        rateService.setTopManagerRate(BigDecimal.valueOf(-3));
 
         rateService.setMarriedRate(BigDecimal.valueOf(-1));
         rateService.setSingleRate(BigDecimal.valueOf(1));
@@ -46,7 +46,7 @@ class CreateInterestRateServiceTest {
                 .employmentStatus(BUSINESS_OWNER)
                 .employerINN("1234567890")
                 .salary(BigDecimal.valueOf(150000))
-                .position(MIDDLE)
+                .position(MID_MANAGER)
                 .workExperienceTotal(36)
                 .workExperienceCurrent(20).build();
         scoringDataDto = ScoringDataDto.builder()
@@ -136,20 +136,20 @@ class CreateInterestRateServiceTest {
 
     @Test
     void calculateRatePosition_SuccessJunior() {
-        BigDecimal rate = rateService.calculateRatePosition(JUNIOR);
-        assertThat(rate).isEqualTo(rateService.getJuniorRate());
+        BigDecimal rate = rateService.calculateRatePosition(WORKER);
+        assertThat(rate).isEqualTo(rateService.getWorkerRate());
     }
 
     @Test
     void calculateRatePosition_SuccessMiddle() {
-        BigDecimal rate = rateService.calculateRatePosition(MIDDLE);
-        assertThat(rate).isEqualTo(rateService.getMiddleRate());
+        BigDecimal rate = rateService.calculateRatePosition(MID_MANAGER);
+        assertThat(rate).isEqualTo(rateService.getMidManagerRate());
     }
 
     @Test
     void calculateRatePosition_SuccessSenior() {
-        BigDecimal rate = rateService.calculateRatePosition(SENIOR);
-        assertThat(rate).isEqualTo(rateService.getSeniorRate());
+        BigDecimal rate = rateService.calculateRatePosition(TOP_MANAGER);
+        assertThat(rate).isEqualTo(rateService.getTopManagerRate());
     }
 
     @Test

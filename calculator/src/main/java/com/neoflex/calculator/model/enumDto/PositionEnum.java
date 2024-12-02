@@ -1,7 +1,8 @@
 package com.neoflex.calculator.model.enumDto;
 
 public enum PositionEnum {
-    JUNIOR,
-    MIDDLE,
-    SENIOR
+    WORKER,
+    MID_MANAGER,
+    TOP_MANAGER,
+    OWNER
 }
