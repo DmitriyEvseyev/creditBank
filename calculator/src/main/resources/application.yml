@@ -24,7 +24,9 @@ application:
       OWNER: 0
     maritalStatus:
       MARRIED: -1
+      DIVORCED: 1
       SINGLE: 1
+      WIDOW_WIDOWER: 0
     genderAndAgeRate:
       male30_55: -3
       female32_65: -3
