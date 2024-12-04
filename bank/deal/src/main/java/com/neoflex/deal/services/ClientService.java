@@ -26,19 +26,13 @@ public class ClientService {
 
     public Client createClient(LoanStatementRequestDto loanStatementRequestDto) {
         Passport passport = modelMapper.map(loanStatementRequestDto, Passport.class);
-        //  Employment employment = modelMapper.map(loanStatementRequestDto, Employment.class);
         Client client = modelMapper.map(loanStatementRequestDto, Client.class);
 
-        client.setGender(MALE);
-
         Passport passportSave = passportRepository.save(passport);
-        //   Employment employmentSave = employmentRepository.save(employment);
         client.setPassport(passportSave);
-        //     client.setEmployment(employmentSave);
         Client clientSave = clientRepository.save(client);
 
         log.info("passportSave - {}", passportSave);
-        //   log.info("employmentSave - {}", employmentSave);
         log.info("clientSave - {}", clientSave);
 
         return clientSave;
