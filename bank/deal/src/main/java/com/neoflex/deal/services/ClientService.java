@@ -40,16 +40,18 @@ public class ClientService {
 
     public Client updateClient(Client client, FinishRegistrationRequestDto finishRegistrationRequestDto) {
         Employment employment = modelMapper.map(finishRegistrationRequestDto.getEmployment(), Employment.class);
-        System.out.println("updateClient, employment - " + employment);
         Employment employmentSave = employmentRepository.save(employment);
         log.info("employmentSave - {}", employmentSave);
         client.setEmployment(employmentSave);
 
         Passport passport = client.getPassport();
-        modelMapper.map(finishRegistrationRequestDto, passport);
-        Passport passportUpdadte = passportRepository.save(passport);
-        log.info("passportUpdadte - {}", passportUpdadte);
+        passport.setPassportIssueBranch(finishRegistrationRequestDto.getPassportIssueBranch());
+        passport.setPassportIssueDate(finishRegistrationRequestDto.getPassportIssueDate());
+        Passport updatePassport = passportRepository.save(passport);
+        log.info("updatePassport - {}", updatePassport);
         client.setPassport(passport);
+
+        modelMapper.map(finishRegistrationRequestDto, client);
 
         Client updateClient = clientRepository.save(client);
         return updateClient;

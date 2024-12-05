@@ -4,6 +4,7 @@ import com.neoflex.deal.exeptions.NotFoundException;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
+import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
 import com.neoflex.deal.repositories.StatementRepository;
 import com.neoflex.deal.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +24,17 @@ import static com.neoflex.deal.model.enumFilds.ChangeTypeEnum.MANUAL;
 public class StatementService {
     private final StatementRepository statementRepository;
 
-    public Statement createStatement(Client client) {
+    public Statement createStatement(Client client, ApplicationStatusEnum applicationStatusEnum) {
         Statement statement = Statement.builder()
                 .client(client)
-                .applicationStatusEnum(PREAPPROVAL)
+                .applicationStatusEnum(applicationStatusEnum)
                 .creationDate(new Timestamp(new Date().getTime()))
                 .listStatusHistory(new ArrayList<>())
                 .build();
 
         statement.getListStatusHistory().add(createStatusHistory(statement));
-
-        return statementRepository.save(statement);
+        Statement saveStatement = statementRepository.save(statement);
+        return saveStatement;
     }
 
     public Statement getStatement(UUID uuid) {

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class ScoringDataDtoService {
-    private final StatementService statementService;
     private final ModelMapper modelMapper;
 
     public ScoringDataDto createScoringDataDto(FinishRegistrationRequestDto finishRegistrationRequestDto,

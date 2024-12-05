@@ -59,7 +59,7 @@ public class DealController {
 
         log.info("loanStatementRequestDto - {}", loanStatementRequestDto);
         Client client = clientService.createClient(loanStatementRequestDto);
-        Statement statement = statementService.createStatement(client);
+        Statement statement = statementService.createStatement(client, ApplicationStatusEnum.PREAPPROVAL);
 
         var response = restClient
                 .post()
