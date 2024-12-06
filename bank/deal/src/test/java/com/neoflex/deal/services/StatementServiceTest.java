@@ -8,6 +8,7 @@ import com.neoflex.deal.model.entities.Credit;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
 import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
+import com.neoflex.deal.model.enumFilds.ChangeTypeEnum;
 import com.neoflex.deal.model.enumFilds.CreditStatusEnum;
 import com.neoflex.deal.repositories.StatementRepository;
 import com.neoflex.deal.utils.Constants;
@@ -22,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,9 +41,16 @@ class StatementServiceTest {
     private Client client;
     private Statement statement;
     private Credit credit;
+    private Timestamp timestamp;
+    private StatusHistory statusHistory;
 
     @BeforeEach
     void setUp() {
+        timestamp = Timestamp.valueOf(LocalDateTime.now());
+        statusHistory = StatusHistory.builder()
+                .status(ApplicationStatusEnum.PREAPPROVAL)
+                .time(timestamp)
+                .changeType(ChangeTypeEnum.MANUAL).build();
         client = Client.builder()
                 .clientId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
                 .lastName("Ivanov")
@@ -51,7 +60,7 @@ class StatementServiceTest {
                 .email("ivan.ivanov@example.com")
                 .build();
         credit = Credit.builder()
-          //      .creditId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
+                //      .creditId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
                 .amount(new BigDecimal("150000"))
                 .term(36)
                 .monthlyPayment(new BigDecimal("15000"))
@@ -63,28 +72,28 @@ class StatementServiceTest {
                 .creditStatusEnum(CreditStatusEnum.CALCULATED)
                 .build();
         statement = Statement.builder()
-              //  .statementId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
+                //  .statementId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
                 .client(client)
-               // .credit(credit)
+                // .credit(credit)
                 .applicationStatusEnum(ApplicationStatusEnum.PREAPPROVAL)
-             //   .creationDate(new Timestamp(123456))
-            //    .loanOfferDto(new LoanOfferDto())
-             //   .singDate(new Timestamp(System.currentTimeMillis()))
-               // .sesCode("SES123")
-              //  .listStatusHistory(List.of(new StatusHistory()))
+                .creationDate(timestamp)
+                //    .loanOfferDto(new LoanOfferDto())
+                //   .singDate(new Timestamp(System.currentTimeMillis()))
+                // .sesCode("SES123")
+                .listStatusHistory(List.of(statusHistory))
                 .build();
 
     }
 
-//    @Test
- //   void createStatement() {
-//
-//        when(statementRepository.save(statement)).thenReturn(statement);
-//
-//        Statement returnStatement = statementService.createStatement(client, ApplicationStatusEnum.PREAPPROVAL);
-//        System.out.println("returnStatement - " + returnStatement);
-//        assertNull(returnStatement);
- //   }
+    @Test
+    void createStatement() {
+        when(statementRepository.save(statement)).thenReturn(statement);
+
+        Statement returnStatement = statementService.createStatement(client, ApplicationStatusEnum.PREAPPROVAL, timestamp);
+
+        assertNotNull(returnStatement);
+        assertEquals(statement, returnStatement);
+    }
 
     @Test
     void getStatement() {

@@ -4,7 +4,12 @@ import com.neoflex.deal.model.dto.FinishRegistrationRequestDto;
 import com.neoflex.deal.model.dto.LoanOfferDto;
 import com.neoflex.deal.model.dto.ScoringDataDto;
 import com.neoflex.deal.model.entities.Client;
+import com.neoflex.deal.model.entities.Employment;
 import com.neoflex.deal.model.entities.Statement;
+import com.neoflex.deal.model.enumFilds.EmploymentStatusEnum;
+import com.neoflex.deal.model.enumFilds.GenderEnum;
+import com.neoflex.deal.model.enumFilds.MaritalStatusEnum;
+import com.neoflex.deal.model.enumFilds.PositionEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +34,7 @@ class ScoringDataDtoServiceTest {
     @InjectMocks
     private ScoringDataDtoService scoringDataDtoService;
 
+    private Employment employment;
     private FinishRegistrationRequestDto finishRegistrationRequestDto;
     private Statement statement;
     private Client client;
@@ -34,6 +43,27 @@ class ScoringDataDtoServiceTest {
 
     @BeforeEach
     public void setUp() {
+        employment = Employment.builder()
+                .employmentStatus(EmploymentStatusEnum.EMPLOYED)
+                .employerINN("1234567890")
+                .salary(new BigDecimal("75000.00"))
+                .position(PositionEnum.MID_MANAGER)
+                .workExperienceTotal(120)
+                .workExperienceCurrent(24)
+                .build();
+        finishRegistrationRequestDto = FinishRegistrationRequestDto.builder()
+                .gender(GenderEnum.MALE)
+                .maritalStatus(MaritalStatusEnum.MARRIED)
+                .dependentAmount(2)
+                .passportIssueDate(LocalDate.of(2005, 10, 25))
+                .passportIssueBranch("Department 1")
+                .employment(employment)
+                .accountNumber("12345678901234567890")
+                .build();
+
+
+
+
         // Настройка мока для getConfiguration()
         when(modelMapper.getConfiguration()).thenReturn(configuration);
 

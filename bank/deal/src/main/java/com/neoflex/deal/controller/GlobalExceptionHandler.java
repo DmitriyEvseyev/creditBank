@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -64,7 +66,7 @@ public class GlobalExceptionHandler {
 
         Statement statement = statementService.getStatement(statementId);
         statement.setApplicationStatusEnum(CC_DENIED);
-        Statement statementUpdate = statementService.updateStatement(statement);
+        Statement statementUpdate = statementService.updateStatement(statement, Timestamp.valueOf(LocalDateTime.now()));
         log.info("statementUpdate - {}", statementUpdate);
 
         log.error("HttpClientErrorException. {}", ex.getMessage());

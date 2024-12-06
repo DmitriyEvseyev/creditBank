@@ -45,8 +45,7 @@ public class ClientService {
         client.setEmployment(employmentSave);
 
         Passport passport = client.getPassport();
-        passport.setPassportIssueBranch(finishRegistrationRequestDto.getPassportIssueBranch());
-        passport.setPassportIssueDate(finishRegistrationRequestDto.getPassportIssueDate());
+        modelMapper.map(finishRegistrationRequestDto, passport);
         Passport updatePassport = passportRepository.save(passport);
         log.info("updatePassport - {}", updatePassport);
         client.setPassport(passport);

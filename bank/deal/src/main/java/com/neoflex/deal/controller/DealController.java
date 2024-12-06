@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,7 +61,9 @@ public class DealController {
 
         log.info("loanStatementRequestDto - {}", loanStatementRequestDto);
         Client client = clientService.createClient(loanStatementRequestDto);
-        Statement statement = statementService.createStatement(client, ApplicationStatusEnum.PREAPPROVAL);
+        Statement statement = statementService.createStatement(client,
+                ApplicationStatusEnum.PREAPPROVAL,
+                Timestamp.valueOf(LocalDateTime.now()));
 
         var response = restClient
                 .post()
@@ -94,7 +98,7 @@ public class DealController {
         statement.setApplicationStatusEnum(APPROVED);
         log.info("statement - {}", statement);
 
-        Statement updateStatement = statementService.updateStatement(statement);
+        Statement updateStatement = statementService.updateStatement(statement, Timestamp.valueOf(LocalDateTime.now()));
         log.info("updateStatement - {}", updateStatement);
     }
 
@@ -135,7 +139,7 @@ public class DealController {
 
         statement.setApplicationStatusEnum(ApplicationStatusEnum.CC_APPROVED);
         statement.setCredit(credit);
-        Statement updateStatement = statementService.updateStatement(statement);
+        Statement updateStatement = statementService.updateStatement(statement, Timestamp.valueOf(LocalDateTime.now()));
         log.info("updateStatement - {}", updateStatement);
     }
 }

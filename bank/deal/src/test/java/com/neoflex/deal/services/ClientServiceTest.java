@@ -130,21 +130,19 @@ class ClientServiceTest {
         verify(clientRepository).save(clientCreateClient);
     }
 
-//    @Test
-//    public void testUpdateClient() {
-////        when(modelMapper.map(finishRegistrationRequestDto.getEmployment(), Employment.class)).thenReturn(employment);
-////        when(employmentRepository.save(employment)).thenReturn(employment);
-////        when(passportRepository.save(passportUpdateClient)).thenReturn(passportUpdateClient);
-////        when(clientRepository.save(clientUpdateClient)).thenReturn(clientUpdateClient);
-////
-////        clientCreateClient.setEmployment(employment);
-////        clientCreateClient.setPassport(passportUpdateClient);
-////        Client returnClient = clientService.updateClient(clientCreateClient, finishRegistrationRequestDto);
-////
-////        assertThat(returnClient).isNotNull();
-////        assertThat(returnClient).isEqualTo(clientUpdateClient);
-////        verify(employmentRepository).save(employment);
-////        verify(passportRepository).save(passportUpdateClient);
-////        verify(clientRepository).save(clientUpdateClient);
-//    }
+    @Test
+    public void testUpdateClient() {
+        when(modelMapper.map(finishRegistrationRequestDto.getEmployment(), Employment.class)).thenReturn(employment);
+        when(employmentRepository.save(employment)).thenReturn(employment);
+        when(passportRepository.save(passportUpdateClient)).thenReturn(passportUpdateClient);
+        when(clientRepository.save(clientUpdateClient)).thenReturn(clientUpdateClient);
+
+        Client returnClient = clientService.updateClient(clientUpdateClient, finishRegistrationRequestDto);
+
+        assertThat(returnClient).isNotNull();
+        assertThat(returnClient).isEqualTo(clientUpdateClient);
+        verify(employmentRepository).save(employment);
+        verify(passportRepository).save(passportUpdateClient);
+        verify(clientRepository).save(clientUpdateClient);
+    }
 }

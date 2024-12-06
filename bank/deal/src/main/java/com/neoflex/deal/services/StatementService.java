@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
@@ -24,15 +25,17 @@ import static com.neoflex.deal.model.enumFilds.ChangeTypeEnum.MANUAL;
 public class StatementService {
     private final StatementRepository statementRepository;
 
-    public Statement createStatement(Client client, ApplicationStatusEnum applicationStatusEnum) {
+    public Statement createStatement(Client client,
+                                     ApplicationStatusEnum applicationStatusEnum,
+                                     Timestamp timestamp) {
         Statement statement = Statement.builder()
                 .client(client)
                 .applicationStatusEnum(applicationStatusEnum)
-                .creationDate(new Timestamp(new Date().getTime()))
+                .creationDate(timestamp)
                 .listStatusHistory(new ArrayList<>())
                 .build();
 
-        statement.getListStatusHistory().add(createStatusHistory(statement));
+        statement.getListStatusHistory().add(createStatusHistory(statement, timestamp));
         Statement saveStatement = statementRepository.save(statement);
         return saveStatement;
     }
@@ -43,15 +46,15 @@ public class StatementService {
                 Constants.NOT_FOUND_STATEMENT_EXCEPTION_MESSAGE + uuid));
     }
 
-    public Statement updateStatement(Statement statement) {
-        statement.getListStatusHistory().add(createStatusHistory(statement));
+    public Statement updateStatement(Statement statement, Timestamp timestamp) {
+        statement.getListStatusHistory().add(createStatusHistory(statement, timestamp));
         return statementRepository.save(statement);
     }
 
-    private StatusHistory createStatusHistory(Statement statement) {
+    private StatusHistory createStatusHistory(Statement statement, Timestamp timestamp) {
         StatusHistory statusHistory = StatusHistory.builder()
                 .status(statement.getApplicationStatusEnum())
-                .time(new Timestamp(new Date().getTime()))
+                .time(timestamp)
                 .changeType(MANUAL).build();
         return statusHistory;
     }
