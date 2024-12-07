@@ -8,8 +8,6 @@ import com.neoflex.deal.model.entities.Statement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
-import org.modelmapper.config.Configuration;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,15 +25,7 @@ public class ScoringDataDtoService {
 
         ScoringDataDto scoringDataDto = modelMapper.map(client, ScoringDataDto.class);
         modelMapper.map(finishRegistrationRequestDto, scoringDataDto);
-
-      // Configuration configuration = modelMapper.getConfiguration().setAmbiguityIgnored(true);
-//        TypeMap<LoanOfferDto, ScoringDataDto> propertyMapper = this.modelMapper.createTypeMap(LoanOfferDto.class, ScoringDataDto.class);
-//        propertyMapper.addMappings(mapper -> {mapper
-//                .map(LoanOfferDto::getRequestedAmount, ScoringDataDto::setAmount);
-//        });
         modelMapper.map(loanOfferDto, scoringDataDto);
-      //  scoringDataDto.setAmount(loanOfferDto.getRequestedAmount());
-   //    configuration =  modelMapper.getConfiguration().setAmbiguityIgnored(false);
 
         return scoringDataDto;
     }

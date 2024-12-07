@@ -1,7 +1,6 @@
 package com.neoflex.deal.services;
 
 import com.neoflex.deal.exeptions.NotFoundException;
-import com.neoflex.deal.model.dto.LoanOfferDto;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
@@ -12,13 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.neoflex.deal.model.enumFilds.ApplicationStatusEnum.PREAPPROVAL;
 import static com.neoflex.deal.model.enumFilds.ChangeTypeEnum.MANUAL;
 
 @Service

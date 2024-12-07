@@ -24,16 +24,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.neoflex.deal.model.enumFilds.ApplicationStatusEnum.APPROVED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RestController
 @RequestMapping("/deal")
-//@RequiredArgsConstructor
 @Slf4j
 @Tag(name = "DealController", description = "контроллер \"Сделка\"")
 public class DealController {
-
     private final ClientService clientService;
     private final StatementService statementService;
     private final ScoringDataDtoService scoringDataDtoService;
@@ -85,7 +82,6 @@ public class DealController {
         return ResponseEntity.ok(offers);
     }
 
-
     @PostMapping("/offer/select")
     @Operation(summary = "выбор предложения",
             description = "в заявке обновляется статус, история статусов(List<StatementStatusHistoryDto>), " +
@@ -130,8 +126,6 @@ public class DealController {
                 .body(scoringDataDto)
                 .retrieve()
                 .toEntity(CreditDto.class);
-        System.out.println("response");
-        System.out.println(response.getBody());
         CreditDto creditDto = response.getBody();
 
         log.info("creditDto - {}", creditDto);

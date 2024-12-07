@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import static com.neoflex.deal.model.enumFilds.GenderEnum.MALE;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j

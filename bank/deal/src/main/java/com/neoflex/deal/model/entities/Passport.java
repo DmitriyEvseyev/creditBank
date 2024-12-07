@@ -47,7 +47,5 @@ public class Passport implements Serializable {
     @Schema(description = "дата выдачи паспорта", examples = "2005-10-25")
     private LocalDate passportIssueDate;
 
-//    @OneToOne(mappedBy = "passport")
-//    private Client client;
 
 }

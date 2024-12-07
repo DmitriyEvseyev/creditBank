@@ -2,7 +2,6 @@ package com.neoflex.deal.controller;
 
 import com.neoflex.deal.exeptions.NotFoundException;
 import com.neoflex.deal.model.entities.Statement;
-import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
 import com.neoflex.deal.services.StatementService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
