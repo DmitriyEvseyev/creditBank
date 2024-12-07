@@ -1,7 +1,10 @@
 package com.neoflex.deal;
 
+import com.neoflex.deal.model.dto.LoanOfferDto;
+import com.neoflex.deal.model.dto.ScoringDataDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +20,17 @@ public class DealApplication {
 
     @Bean
     public ModelMapper modelMapper() {
-        return new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(new PropertyMap<LoanOfferDto, ScoringDataDto>() {
+            @Override
+            protected void configure() {
+                // Указываем, что нужно использовать getRequestedAmount()
+                map().setAmount(source.getRequestedAmount());
+            }
+        });
+        return modelMapper;
     }
 
 }
+//        propertyMapper.addMappings(mapper -> mapper.skip(GameDTO::setId));
+//                propertyMapper.addMappings(mapper -> mapper.skip(ScoringDataDto::setAmount));

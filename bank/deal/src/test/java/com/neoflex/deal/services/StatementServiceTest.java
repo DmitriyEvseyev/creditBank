@@ -1,7 +1,6 @@
 package com.neoflex.deal.services;
 
 import com.neoflex.deal.exeptions.NotFoundException;
-import com.neoflex.deal.model.dto.LoanOfferDto;
 import com.neoflex.deal.model.dto.PaymentScheduleElementDto;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Credit;
@@ -24,12 +23,10 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +40,7 @@ class StatementServiceTest {
     private Credit credit;
     private Timestamp timestamp;
     private StatusHistory statusHistory;
+    private List<StatusHistory> historyList;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +49,8 @@ class StatementServiceTest {
                 .status(ApplicationStatusEnum.PREAPPROVAL)
                 .time(timestamp)
                 .changeType(ChangeTypeEnum.MANUAL).build();
+        historyList = new ArrayList<>();
+        historyList.add(statusHistory);
         client = Client.builder()
                 .clientId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
                 .lastName("Ivanov")
@@ -60,7 +60,6 @@ class StatementServiceTest {
                 .email("ivan.ivanov@example.com")
                 .build();
         credit = Credit.builder()
-                //      .creditId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
                 .amount(new BigDecimal("150000"))
                 .term(36)
                 .monthlyPayment(new BigDecimal("15000"))
@@ -72,15 +71,10 @@ class StatementServiceTest {
                 .creditStatusEnum(CreditStatusEnum.CALCULATED)
                 .build();
         statement = Statement.builder()
-                //  .statementId(UUID.fromString("4b76f44b-0ec6-48db-a5f9-1bf1fbfac53b"))
                 .client(client)
-                // .credit(credit)
                 .applicationStatusEnum(ApplicationStatusEnum.PREAPPROVAL)
                 .creationDate(timestamp)
-                //    .loanOfferDto(new LoanOfferDto())
-                //   .singDate(new Timestamp(System.currentTimeMillis()))
-                // .sesCode("SES123")
-                .listStatusHistory(List.of(statusHistory))
+                .listStatusHistory(historyList)
                 .build();
 
     }
@@ -105,7 +99,7 @@ class StatementServiceTest {
     }
 
     @Test
-    public void testGetStatement_NotFound() {
+    public void GetStatement_NotFound() {
         UUID uuid = UUID.randomUUID();
         when(statementRepository.findById(uuid)).thenReturn(Optional.empty());
 
@@ -116,8 +110,17 @@ class StatementServiceTest {
         assertEquals(Constants.NOT_FOUND_STATEMENT_EXCEPTION_MESSAGE + uuid, exception.getMessage());
     }
 
-//    @Test
-//    void updateStatement() {
-//
-//    }
+    @Test
+    public void updateStatement() {
+        when(statementRepository.save(statement)).thenReturn(statement);
+
+        Statement updatedStatement = statementService.updateStatement(
+                statement,
+                timestamp,
+                ApplicationStatusEnum.APPROVED);
+
+        assertNotNull(updatedStatement);
+        assertEquals(updatedStatement, statement);
+        assertEquals(2, updatedStatement.getListStatusHistory().size());
+    }
 }

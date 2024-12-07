@@ -2,6 +2,7 @@ package com.neoflex.deal.controller;
 
 import com.neoflex.deal.exeptions.NotFoundException;
 import com.neoflex.deal.model.entities.Statement;
+import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
 import com.neoflex.deal.services.StatementService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +66,10 @@ public class GlobalExceptionHandler {
         log.info("statementId - {}", statementId);
 
         Statement statement = statementService.getStatement(statementId);
-        statement.setApplicationStatusEnum(CC_DENIED);
-        Statement statementUpdate = statementService.updateStatement(statement, Timestamp.valueOf(LocalDateTime.now()));
+        Statement statementUpdate = statementService.updateStatement(
+                statement,
+                Timestamp.valueOf(LocalDateTime.now()),
+                CC_DENIED);
         log.info("statementUpdate - {}", statementUpdate);
 
         log.error("HttpClientErrorException. {}", ex.getMessage());

@@ -61,7 +61,8 @@ public class DealController {
 
         log.info("loanStatementRequestDto - {}", loanStatementRequestDto);
         Client client = clientService.createClient(loanStatementRequestDto);
-        Statement statement = statementService.createStatement(client,
+        Statement statement = statementService.createStatement(
+                client,
                 ApplicationStatusEnum.PREAPPROVAL,
                 Timestamp.valueOf(LocalDateTime.now()));
 
@@ -95,10 +96,10 @@ public class DealController {
 
         Statement statement = statementService.getStatement(loanOfferDto.getUuid());
         statement.setLoanOfferDto(loanOfferDto);
-        statement.setApplicationStatusEnum(APPROVED);
-        log.info("statement - {}", statement);
-
-        Statement updateStatement = statementService.updateStatement(statement, Timestamp.valueOf(LocalDateTime.now()));
+        Statement updateStatement = statementService.updateStatement(
+                statement,
+                Timestamp.valueOf(LocalDateTime.now()),
+                ApplicationStatusEnum.APPROVED);
         log.info("updateStatement - {}", updateStatement);
     }
 
@@ -137,9 +138,11 @@ public class DealController {
         Credit credit = creditService.createCredit(creditDto);
         log.info("credi - {}", credit);
 
-        statement.setApplicationStatusEnum(ApplicationStatusEnum.CC_APPROVED);
         statement.setCredit(credit);
-        Statement updateStatement = statementService.updateStatement(statement, Timestamp.valueOf(LocalDateTime.now()));
+        Statement updateStatement = statementService.updateStatement(
+                statement,
+                Timestamp.valueOf(LocalDateTime.now()),
+                ApplicationStatusEnum.CC_APPROVED);
         log.info("updateStatement - {}", updateStatement);
     }
 }

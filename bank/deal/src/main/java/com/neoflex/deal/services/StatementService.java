@@ -1,6 +1,7 @@
 package com.neoflex.deal.services;
 
 import com.neoflex.deal.exeptions.NotFoundException;
+import com.neoflex.deal.model.dto.LoanOfferDto;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
@@ -46,7 +47,10 @@ public class StatementService {
                 Constants.NOT_FOUND_STATEMENT_EXCEPTION_MESSAGE + uuid));
     }
 
-    public Statement updateStatement(Statement statement, Timestamp timestamp) {
+    public Statement updateStatement(Statement statement,
+                                     Timestamp timestamp,
+                                     ApplicationStatusEnum applicationStatusEnum) {
+        statement.setApplicationStatusEnum(applicationStatusEnum);
         statement.getListStatusHistory().add(createStatusHistory(statement, timestamp));
         return statementRepository.save(statement);
     }

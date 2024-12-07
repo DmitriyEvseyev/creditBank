@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -142,7 +143,9 @@ class ClientServiceTest {
         assertThat(returnClient).isNotNull();
         assertThat(returnClient).isEqualTo(clientUpdateClient);
         verify(employmentRepository).save(employment);
+        verify(modelMapper).map(finishRegistrationRequestDto, passportUpdateClient);
         verify(passportRepository).save(passportUpdateClient);
+        verify(modelMapper).map(finishRegistrationRequestDto, clientUpdateClient);
         verify(clientRepository).save(clientUpdateClient);
     }
 }
