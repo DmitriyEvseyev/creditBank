@@ -32,5 +32,3 @@ public class DealApplication {
     }
 
 }
-//        propertyMapper.addMappings(mapper -> mapper.skip(GameDTO::setId));
-//                propertyMapper.addMappings(mapper -> mapper.skip(ScoringDataDto::setAmount));
