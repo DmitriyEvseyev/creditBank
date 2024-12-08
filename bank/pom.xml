@@ -5,8 +5,8 @@
 
     <groupId>com.neoflex</groupId>
     <artifactId>bank</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <description>demo</description>
+    <version>1.0.0</version>
+    <description>bank</description>
 
     <packaging>pom</packaging>
 
@@ -15,4 +15,13 @@
         <module>deal</module>
     </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.23.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

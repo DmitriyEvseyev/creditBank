@@ -1,6 +1,6 @@
 logging:
   file:
-    name: myapp.log
+    name: calculator/calculator.log
   logback:
     rollingpolicy:
       max-file-size: 1MB

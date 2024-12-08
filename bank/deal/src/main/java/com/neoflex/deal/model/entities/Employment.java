@@ -52,6 +52,4 @@ public class Employment {
     @Schema(description = "текущий стаж, в месяцах")
     private Integer workExperienceCurrent;
 
-//    @OneToOne(mappedBy = "employment")
-//    private Client client;
 }

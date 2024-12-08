@@ -65,15 +65,11 @@ public class Client {
     @Schema(description = "сумма кредита")
     private Integer dependentAmount;
 
-    //    @OneToOne
-//    @JoinColumn(name = "passport_id")
     @Column(name = "passport_id")
     @JdbcTypeCode(SqlTypes.JSON)
     @Schema(description = "passport UUID")
     private Passport passport;
 
-    //    @OneToOne
-//    @JoinColumn(name = "employment_id", referencedColumnName = "employment_uuid")
     @Column(name = "employment_id")
     @JdbcTypeCode(SqlTypes.JSON)
     @Schema(description = "employment UUID")
@@ -83,7 +79,7 @@ public class Client {
     @Schema(description = "номер счета")
     private String accountNumber;
 
-    @OneToOne(mappedBy = "client")
+    @OneToOne(mappedBy = "client", cascade = CascadeType.REMOVE)
     private Statement statement;
 
 }
