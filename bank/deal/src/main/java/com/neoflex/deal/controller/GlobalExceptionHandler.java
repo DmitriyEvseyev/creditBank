@@ -1,6 +1,6 @@
 package com.neoflex.deal.controller;
 
-import com.neoflex.deal.exeptions.NotFoundException;
+import com.neoflex.deal.exeptions.EntityNotFoundException;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.services.StatementService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,12 +49,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("HttpMessageNotReadableException. " + ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
-        log.error("NotFoundException. {} ", e.getMessage());
-        return new ResponseEntity<>("NotFoundException. " + e.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> handleNotFoundException(EntityNotFoundException e) {
+        log.error("EntityNotFoundException. {} ", e.getMessage());
+        return new ResponseEntity<>("EntityNotFoundException. " + e.getMessage(), HttpStatus.NOT_FOUND);
     }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<String> handleCreatedExeption(HttpClientErrorException ex, HttpServletRequest request) {

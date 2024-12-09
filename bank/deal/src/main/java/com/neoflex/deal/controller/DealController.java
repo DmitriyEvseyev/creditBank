@@ -12,8 +12,8 @@ import com.neoflex.deal.services.StatementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +27,7 @@ import java.util.UUID;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/deal")
 @Slf4j
 @Tag(name = "DealController", description = "контроллер \"Сделка\"")
@@ -37,22 +38,11 @@ public class DealController {
     private final CreditService creditService;
     private final RestClient restClient;
 
-    @Autowired
-    public DealController(ClientService clientService,
-                          StatementService statementService,
-                          ScoringDataDtoService scoringDataDtoService,
-                          CreditService creditService) {
-        this.clientService = clientService;
-        this.statementService = statementService;
-        this.scoringDataDtoService = scoringDataDtoService;
-        this.creditService = creditService;
-        this.restClient = RestClient.create();
-    }
-
     @PostMapping("/statement")
     @Operation(summary = "расчёт возможных условий кредита",
-            description = "приходит LoanStatementRequestDto, создаётся сущность Client, " +
-                    "Statement - в БД, отправляется POST запрос на /calculator/offers МС Калькулятор.")
+            description = """
+                    Приходит LoanStatementRequestDto, создаётся сущность Client, Statement - в БД, отправляется POST
+                    запрос на /calculator/offers МС Калькулятор.""")
     public ResponseEntity<List<LoanOfferDto>> createStatement(
             @RequestBody @Valid LoanStatementRequestDto loanStatementRequestDto) {
 
@@ -84,9 +74,9 @@ public class DealController {
 
     @PostMapping("/offer/select")
     @Operation(summary = "выбор предложения",
-            description = "в заявке обновляется статус, история статусов(List<StatementStatusHistoryDto>), " +
-                    "принятое предложение LoanOfferDto устанавливается в поле appliedOffer. " +
-                    "Заявка сохраняется.")
+            description = """
+                    В заявке обновляется статус, история статусов(List<StatementStatusHistoryDto>),
+                    принятое предложение LoanOfferDto устанавливается в поле appliedOffer. Заявка сохраняется.""")
     public void selectStatement(@RequestBody @Valid LoanOfferDto loanOfferDto) {
         log.info("loanOfferDto - {}", loanOfferDto);
 
@@ -101,11 +91,12 @@ public class DealController {
 
     @PostMapping("/calculate/{statementId}")
     @Operation(summary = "обновление заявки",
-            description = "приходит FinishRegistrationRequestDto и statementId. " +
-                    "ScoringDataDto насыщается информацией из FinishRegistrationRequestDto и Client. " +
-                    "Отправляется POST запрос на /calculator/calc МС Калькулятор с телом ScoringDataDto через RestClient. " +
-                    "На основе полученного из кредитного конвейера CreditDto создаётся сущность Credit и сохраняется в базу со статусом CALCULATED. " +
-                    "В заявке обновляется статус, история статусов. Заявка сохраняется. ")
+            description = """
+                     Приходит FinishRegistrationRequestDto и statementId. ScoringDataDto насыщается информацией
+                     из FinishRegistrationRequestDto и Client. Отправляется POST запрос на /calculator/calc
+                     МС Калькулятор с телом ScoringDataDto через RestClient. На основе полученного из кредитного
+                     конвейера CreditDto создаётся сущность Credit и сохраняется в базу со статусом CALCULATED.
+                     В заявке обновляется статус, история статусов. Заявка сохраняется.""")
     public void calculateStatement(@RequestBody @Valid FinishRegistrationRequestDto finishRegistrationRequestDto,
                                    @PathVariable("statementId") String statementId) {
         log.info("FinishRegistrationRequestDto - {}", finishRegistrationRequestDto);

@@ -20,7 +20,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-
 @Schema(description = "Сущность - заявление.")
 public class Statement {
     @Id
