@@ -1,6 +1,6 @@
 package com.neoflex.deal.services;
 
-import com.neoflex.deal.exeptions.NotFoundException;
+import com.neoflex.deal.exeptions.EntityNotFoundException;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
@@ -39,7 +39,7 @@ public class StatementService {
 
     public Statement getStatement(UUID uuid) {
         Optional<Statement> statement = statementRepository.findById(uuid);
-        return statement.orElseThrow(() -> new NotFoundException(
+        return statement.orElseThrow(() -> new EntityNotFoundException(
                 Constants.NOT_FOUND_STATEMENT_EXCEPTION_MESSAGE + uuid));
     }
 

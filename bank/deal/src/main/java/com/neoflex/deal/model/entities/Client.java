@@ -2,6 +2,7 @@ package com.neoflex.deal.model.entities;
 
 import com.neoflex.deal.model.enumFilds.GenderEnum;
 import com.neoflex.deal.model.enumFilds.MaritalStatusEnum;
+import com.neoflex.deal.utils.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,7 +44,7 @@ public class Client {
 
     @Column(name = "birth_date")
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = Constants.DATE_PATTERN)
     @Schema(description = "дата рождения", examples = "1995-10-25")
     private LocalDate birthdate;
 

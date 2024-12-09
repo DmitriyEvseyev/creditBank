@@ -1,6 +1,6 @@
 package com.neoflex.deal.services;
 
-import com.neoflex.deal.exeptions.NotFoundException;
+import com.neoflex.deal.exeptions.EntityNotFoundException;
 import com.neoflex.deal.model.dto.PaymentScheduleElementDto;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Credit;
@@ -103,10 +103,10 @@ class StatementServiceTest {
         UUID uuid = UUID.randomUUID();
         when(statementRepository.findById(uuid)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
             statementService.getStatement(uuid);
         });
-        Assertions.assertThat(exception).isInstanceOf(NotFoundException.class);
+        Assertions.assertThat(exception).isInstanceOf(EntityNotFoundException.class);
         assertEquals(Constants.NOT_FOUND_STATEMENT_EXCEPTION_MESSAGE + uuid, exception.getMessage());
     }
 
