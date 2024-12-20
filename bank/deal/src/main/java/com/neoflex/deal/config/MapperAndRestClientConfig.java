@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 
 @org.springframework.context.annotation.Configuration
-public class Configuration {
+public class MapperAndRestClientConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();

@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: deal
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/creditBank
+    username: postgres
+    password: 5b6eu5
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+  kafka:
+    topics:
+      finish_registration,
+      create_documents,
+      send_documents,
+      send_ses,
+      credit_issued,
+      statement_denied
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 10
+      properties:
+        retry.backoff.ms: 1000
+        # delivery.timeout.ms: 20000
+        enable.idempotence: true
+
+
+server:
+  port: 8081
+
+logging:
+  file:
+    name: deal/deal.log
+  logback:
+    rollingpolicy:
+      max-file-size: 1MB
+      max-history: 10
+
+
+email: yevseyevdmitriy@yandex.ru

@@ -5,26 +5,19 @@ import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Credit;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
-import com.neoflex.deal.services.ClientService;
-import com.neoflex.deal.services.CreditService;
-import com.neoflex.deal.services.ScoringDataDtoService;
-import com.neoflex.deal.services.StatementService;
+import com.neoflex.deal.services.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +29,7 @@ public class DealController {
     private final StatementService statementService;
     private final ScoringDataDtoService scoringDataDtoService;
     private final CreditService creditService;
-    private final RestClient restClient;
+    private final EmailKafkaService emailKafkaService;
 
     @PostMapping("/statement")
     @Operation(summary = "расчёт возможных условий кредита",
@@ -53,22 +46,8 @@ public class DealController {
                 ApplicationStatusEnum.PREAPPROVAL,
                 Timestamp.valueOf(LocalDateTime.now()));
 
-        var response = restClient
-                .post()
-                .uri("http://localhost:8080/calculator/offers")
-                .contentType(APPLICATION_JSON)
-                .body(loanStatementRequestDto)
-                .retrieve()
-                .toEntity(new ParameterizedTypeReference<List<LoanOfferDto>>() {
-                });
-
-        log.info("response - {}", response);
-        List<LoanOfferDto> offers = response.getBody();
-
-        for (LoanOfferDto offer : offers) {
-            offer.setUuid(statement.getStatementId());
-            log.info("Updated offer with UUID: {}", offer);
-        }
+        List<LoanOfferDto> offers = statementService.getListOffers(statement, loanStatementRequestDto);
+        log.info("Updated offer with UUID: {}", offers);
         return ResponseEntity.ok(offers);
     }
 
@@ -87,41 +66,31 @@ public class DealController {
                 Timestamp.valueOf(LocalDateTime.now()),
                 ApplicationStatusEnum.APPROVED);
         log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.createFinishRegistrationEmail(updateStatement);
     }
 
     @PostMapping("/calculate/{statementId}")
     @Operation(summary = "обновление заявки",
             description = """
-                     Приходит FinishRegistrationRequestDto и statementId. ScoringDataDto насыщается информацией
-                     из FinishRegistrationRequestDto и Client. Отправляется POST запрос на /calculator/calc
-                     МС Калькулятор с телом ScoringDataDto через RestClient. На основе полученного из кредитного
-                     конвейера CreditDto создаётся сущность Credit и сохраняется в базу со статусом CALCULATED.
-                     В заявке обновляется статус, история статусов. Заявка сохраняется.""")
+                    Приходит FinishRegistrationRequestDto и statementId. ScoringDataDto насыщается информацией
+                    из FinishRegistrationRequestDto и Client. Отправляется POST запрос на /calculator/calc
+                    МС Калькулятор с телом ScoringDataDto через RestClient. На основе полученного из кредитного
+                    конвейера CreditDto создаётся сущность Credit и сохраняется в базу со статусом CALCULATED.
+                    В заявке обновляется статус, история статусов. Заявка сохраняется.""")
     public void calculateStatement(@RequestBody @Valid FinishRegistrationRequestDto finishRegistrationRequestDto,
                                    @PathVariable("statementId") String statementId) {
         log.info("FinishRegistrationRequestDto - {}", finishRegistrationRequestDto);
         log.info("statementId - {}", statementId);
-        UUID statementIdUuid = UUID.fromString(statementId);
-
-        Statement statement = statementService.getStatement(statementIdUuid);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
 
         ScoringDataDto scoringDataDto = scoringDataDtoService.createScoringDataDto(finishRegistrationRequestDto, statement);
         log.info("scoringDataDto - {}", scoringDataDto);
-        Client client = statement.getClient();
-        Client clientUpdate = clientService.updateClient(client, finishRegistrationRequestDto);
-        statement.setClient(clientUpdate);
-        var response = restClient
-                .post()
-                .uri("http://localhost:8080/calculator/calc")
-                .contentType(APPLICATION_JSON)
-                .body(scoringDataDto)
-                .retrieve()
-                .toEntity(CreditDto.class);
-        CreditDto creditDto = response.getBody();
 
-        log.info("creditDto - {}", creditDto);
-        Credit credit = creditService.createCredit(creditDto);
-        log.info("credi - {}", credit);
+        Client clientUpdate = clientService.updateClient(statement.getClient(), finishRegistrationRequestDto);
+        statement.setClient(clientUpdate);
+
+        Credit credit = creditService.createCredit(scoringDataDto);
+        log.info("credit - {}", credit);
 
         statement.setCredit(credit);
         Statement updateStatement = statementService.updateStatement(
@@ -129,5 +98,6 @@ public class DealController {
                 Timestamp.valueOf(LocalDateTime.now()),
                 ApplicationStatusEnum.CC_APPROVED);
         log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.createDocumentsEmail(updateStatement);
     }
 }
