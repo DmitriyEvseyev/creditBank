@@ -35,4 +35,10 @@ public class CreditService {
         Credit creditSave = creditRepository.save(credit);
         return creditSave;
     }
+
+    public Credit updateStatusCredit(Credit credit) {
+        credit.setCreditStatusEnum(CreditStatusEnum.ISSUED);
+        Credit creditSave = creditRepository.save(credit);
+        return creditSave;
+    }
 }

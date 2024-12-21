@@ -100,4 +100,66 @@ public class DealController {
         log.info("updateStatement - {}", updateStatement);
         emailKafkaService.createDocumentsEmail(updateStatement);
     }
+
+    @PostMapping("/document/{statementId}/send")
+    @Operation(summary = "запрос на отправку документов",
+            description = """ 
+                    Клиент отправляет запрос на формирование документов в МС Досье. Приходит statementId.
+                    МС Досье отправляет клиенту на почту документы.""")
+    public void sendDocuments(@PathVariable("statementId") String statementId) {
+        log.info("statementId - {}", statementId);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
+        Statement updateStatement = statementService.updateStatement(
+                statement,
+                Timestamp.valueOf(LocalDateTime.now()),
+                ApplicationStatusEnum.PREPARE_DOCUMENTS);
+        log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.sendDocumentsEmail(updateStatement);
+    }
+
+    @PostMapping("/document/{statementId}/sing")
+    @Operation(summary = "запрос на подписание документов",
+            description = """ 
+                    Приходит statementId. Если клиент согласен с условиями,
+                    МС Досье на почту отправляет код и ссылку на подписание документов,
+                    куда клиент должен отправить полученный код в МС Сделка.""")
+    public void singDocuments(@PathVariable("statementId") String statementId) {
+        log.info("statementId - {}", statementId);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
+        Statement updateStatement = statementService.setSESCode(statement);
+        log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.singDocumentsEmail(updateStatement);
+    }
+
+    @PostMapping("/document/{statementId}/code")
+    @Operation(summary = "подписание документов",
+            description = """ 
+                    Приходит statementId, sesCode. Если полученный код совпадает с отправленным,
+                    МС Сделка выдает кредит (меняет статус сущности "Кредит" на ISSUED,
+                    а статус заявки на CREDIT_ISSUED.""")
+    public void verifySESCode(@RequestBody @Valid SESCode sesCode,
+                                  @PathVariable("statementId") String statementId) {
+        log.info("sesCode - {}", sesCode);
+        log.info("statementId - {}", statementId);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
+
+        Boolean verifySESCode = statementService.verifySESCode(statement, sesCode);
+
+        if (verifySESCode) {
+            Statement updateSignedStatement = statementService.updateStatement(
+                    statement,
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    ApplicationStatusEnum.DOCUMENT_SIGNED);
+            log.info("updateSignedStatement - {}", updateSignedStatement);
+
+            Credit credit = updateSignedStatement.getCredit();
+            updateSignedStatement.setCredit(creditService.updateStatusCredit(credit));
+            Statement updateIssuedStatement = statementService.updateStatement(
+                    updateSignedStatement,
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    ApplicationStatusEnum.CREDIT_ISSUED);
+            log.info("updateIssuedStatement - {}", updateIssuedStatement);
+            emailKafkaService.creditIssuedEmail(updateIssuedStatement);
+        }
+    }
 }

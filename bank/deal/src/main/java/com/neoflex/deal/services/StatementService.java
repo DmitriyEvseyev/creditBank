@@ -3,13 +3,16 @@ package com.neoflex.deal.services;
 import com.neoflex.deal.exeptions.EntityNotFoundException;
 import com.neoflex.deal.model.dto.LoanOfferDto;
 import com.neoflex.deal.model.dto.LoanStatementRequestDto;
+import com.neoflex.deal.model.dto.SESCode;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
 import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
 import com.neoflex.deal.repositories.StatementRepository;
 import com.neoflex.deal.utils.Constants;
+import com.neoflex.deal.utils.GeneratorSESCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -26,8 +29,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Service
 @RequiredArgsConstructor
 public class StatementService {
+    @Value("${SESCodeLength}")
+    private Integer SESCodeLength;
     private final StatementRepository statementRepository;
     private final RestClient restClient;
+    private final GeneratorSESCode generatorSESCode;
 
     public Statement createStatement(Client client,
                                      ApplicationStatusEnum applicationStatusEnum,
@@ -81,4 +87,15 @@ public class StatementService {
         }
         return offers;
     }
+
+    public Statement setSESCode(Statement statement) {
+        String SESCode = generatorSESCode.generateSESCode(SESCodeLength);
+        statement.setSesCode(SESCode);
+        return statementRepository.save(statement);
+    }
+
+    public Boolean verifySESCode(Statement statement, SESCode sesCode) {
+        String statementSESCode = statement.getSesCode();
+        return statementSESCode.equals(sesCode.getCode());
+     }
 }
