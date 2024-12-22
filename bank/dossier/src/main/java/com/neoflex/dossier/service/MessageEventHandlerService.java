@@ -35,7 +35,6 @@ public class MessageEventHandlerService {
         log.info("emailMessageDto - {}", emailMessageDto);
         emailService.sendSimpleEmail(emailMessageDto);
     }
-
     @KafkaListener(topics = "send_ses")
     public void handleSendSES(EmailMessageDto emailMessageDto) {
         log.info("emailMessageDto - {}", emailMessageDto);
