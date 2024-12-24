@@ -92,11 +92,11 @@ public class DealController {
     @PostMapping("/calculate/{statementId}")
     @Operation(summary = "обновление заявки",
             description = """
-                     Приходит FinishRegistrationRequestDto и statementId. ScoringDataDto насыщается информацией
-                     из FinishRegistrationRequestDto и Client. Отправляется POST запрос на /calculator/calc
-                     МС Калькулятор с телом ScoringDataDto через RestClient. На основе полученного из кредитного
-                     конвейера CreditDto создаётся сущность Credit и сохраняется в базу со статусом CALCULATED.
-                     В заявке обновляется статус, история статусов. Заявка сохраняется.""")
+                    Приходит FinishRegistrationRequestDto и statementId. ScoringDataDto насыщается информацией
+                    из FinishRegistrationRequestDto и Client. Отправляется POST запрос на /calculator/calc
+                    МС Калькулятор с телом ScoringDataDto через RestClient. На основе полученного из кредитного
+                    конвейера CreditDto создаётся сущность Credit и сохраняется в базу со статусом CALCULATED.
+                    В заявке обновляется статус, история статусов. Заявка сохраняется.""")
     public void calculateStatement(@RequestBody @Valid FinishRegistrationRequestDto finishRegistrationRequestDto,
                                    @PathVariable("statementId") String statementId) {
         log.info("FinishRegistrationRequestDto - {}", finishRegistrationRequestDto);
@@ -129,5 +129,26 @@ public class DealController {
                 Timestamp.valueOf(LocalDateTime.now()),
                 ApplicationStatusEnum.CC_APPROVED);
         log.info("updateStatement - {}", updateStatement);
+    }
+
+    @PostMapping("/admin/statement/{statementId}")
+    @Operation(summary = "получение заявки",
+            description = """
+                    Приходит statementId. Ответ - statement.""")
+    public ResponseEntity<StatementDto> getStatementDto(@PathVariable("statementId") String statementId) {
+        log.info("statementId - {}", statementId);
+        StatementDto statementDto = statementService.getStatementDto(UUID.fromString(statementId));
+        log.info("statementDto - {}", statementDto);
+        return ResponseEntity.ok(statementDto);
+    }
+
+    @PostMapping("/admin/statement")
+    @Operation(summary = "получение всех заявок",
+            description = """
+                   Ответ - List<Statement>.""")
+    public ResponseEntity<List<StatementDto>> getAllStatementDtos() {
+        List<StatementDto> statementDtoList = statementService.gelAllStatementDto();
+        log.info("statementDtoList - {}", statementDtoList);
+        return ResponseEntity.ok(statementDtoList);
     }
 }
