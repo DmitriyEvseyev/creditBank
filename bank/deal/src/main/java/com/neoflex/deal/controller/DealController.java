@@ -131,7 +131,7 @@ public class DealController {
         log.info("updateStatement - {}", updateStatement);
     }
 
-    @PostMapping("/admin/statement/{statementId}")
+    @GetMapping("/admin/statement/{statementId}")
     @Operation(summary = "получение заявки",
             description = """
                     Приходит statementId. Ответ - statement.""")
@@ -142,7 +142,7 @@ public class DealController {
         return ResponseEntity.ok(statementDto);
     }
 
-    @PostMapping("/admin/statement")
+    @GetMapping("/admin/statement")
     @Operation(summary = "получение всех заявок",
             description = """
                    Ответ - List<Statement>.""")
