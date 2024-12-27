@@ -13,7 +13,7 @@ services:
     image: bitnami/kafka:latest
     ports:
       - "9092:9092"  # Внешний порт для INSIDE
-#      - "9093:9093"  # Внешний порт для OUTSIDE
+    #      - "9093:9093"  # Внешний порт для OUTSIDE
     environment:
       KAFKA_ADVERTISED_LISTENERS: INSIDE://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT

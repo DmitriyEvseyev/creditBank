@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: deal
@@ -32,7 +33,6 @@ spring:
       retries: 10
       properties:
         retry.backoff.ms: 1000
-        # delivery.timeout.ms: 20000
         enable.idempotence: true
 
 server:

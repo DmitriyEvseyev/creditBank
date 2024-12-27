@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class Config {
+public class KafkaConfig {
     @Autowired
     Environment environment;
 

@@ -12,7 +12,6 @@ import org.springframework.kafka.core.KafkaAdmin;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Configuration
 @Slf4j
 public class KafkaConfig {
@@ -36,4 +35,51 @@ public class KafkaConfig {
         }
         return new KafkaAdmin.NewTopics(topics.toArray(NewTopic[]::new));
     }
+//    @Bean
+//    public NewTopic finishRegistrationtopic() {
+//        return TopicBuilder.name("finish_registration")
+//                .partitions(3)
+//                .replicas(1)
+//                .build();
+//    }
+//
+//    @Bean
+//    public NewTopic createDocumentsTopic() {
+//        return TopicBuilder.name("create_documents")
+//                .partitions(3)
+//                .replicas(1)
+//                .build();
+//    }
+//
+//    @Bean
+//    public NewTopic sendDocumentsTopic() {
+//        return TopicBuilder.name("send_documents")
+//                .partitions(3)
+//                .replicas(1)
+//                .build();
+//    }
+//
+//    @Bean
+//    public NewTopic sendSesTopic() {
+//        return TopicBuilder.name("send_ses")
+//                .partitions(3)
+//                .replicas(1)
+//                .build();
+//    }
+//
+//    @Bean
+//    public NewTopic creditIssuedTopic() {
+//        return TopicBuilder.name("credit_issued")
+//                .partitions(3)
+//                .replicas(1)
+//                .build();
+//    }
+//
+//    @Bean
+//    public NewTopic statementDeniedTopic() {
+//        return TopicBuilder.name("statement_denied")
+//                .partitions(3)
+//                .replicas(1)
+//                .build();
+//    }
 }

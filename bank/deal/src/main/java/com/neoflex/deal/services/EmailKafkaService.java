@@ -5,12 +5,10 @@ import com.neoflex.core.dto.ThemeEnum;
 import com.neoflex.deal.model.entities.Statement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,8 +16,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Slf4j
 public class EmailKafkaService {
-    @Value("${spring.kafka.topics}")
-    private List<String> topicsList;
 
     private final KafkaTemplate<String, EmailMessageDto> kafkaTemplate;
 
@@ -33,7 +29,7 @@ public class EmailKafkaService {
         log.info("EmailMessageDto - {}", email);
 
         CompletableFuture<SendResult<String, EmailMessageDto>> future =
-                kafkaTemplate.send(topicsList.get(0), emailId, email);
+                kafkaTemplate.send("finish_registration", emailId, email);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
                 log.info("Error. {}", ex.getMessage());
@@ -55,7 +51,7 @@ public class EmailKafkaService {
         log.info("EmailMessageDto - {}", email);
 
         CompletableFuture<SendResult<String, EmailMessageDto>> future =
-                kafkaTemplate.send(topicsList.get(1), emailId, email);
+                kafkaTemplate.send("create_documents", emailId, email);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
                 log.info("Error. {}", ex.getMessage());
@@ -77,7 +73,7 @@ public class EmailKafkaService {
         log.info("EmailMessageDto - {}", email);
 
         CompletableFuture<SendResult<String, EmailMessageDto>> future =
-                kafkaTemplate.send(topicsList.get(2), emailId, email);
+                kafkaTemplate.send("send_documents", emailId, email);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
                 log.info("Error. {}", ex.getMessage());
@@ -100,7 +96,7 @@ public class EmailKafkaService {
         log.info("EmailMessageDto - {}", email);
 
         CompletableFuture<SendResult<String, EmailMessageDto>> future =
-                kafkaTemplate.send(topicsList.get(3), emailId, email);
+                kafkaTemplate.send("send_ses", emailId, email);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
                 log.info("Error. {}", ex.getMessage());
@@ -123,7 +119,7 @@ public class EmailKafkaService {
         log.info("EmailMessageDto - {}", email);
 
         CompletableFuture<SendResult<String, EmailMessageDto>> future =
-                kafkaTemplate.send(topicsList.get(4), emailId, email);
+                kafkaTemplate.send("credit_issued", emailId, email);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
                 log.info("Error. {}", ex.getMessage());
@@ -145,7 +141,7 @@ public class EmailKafkaService {
         log.info("EmailMessageDto - {}", email);
 
         CompletableFuture<SendResult<String, EmailMessageDto>> future =
-                kafkaTemplate.send(topicsList.get(5), emailId, email);
+                kafkaTemplate.send("statement_denied", emailId, email);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
                 log.info("Error. {}", ex.getMessage());

@@ -5,10 +5,10 @@ import com.neoflex.deal.model.dto.ScoringDataDto;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestClient;
+import org.springframework.context.annotation.Configuration;
 
-@org.springframework.context.annotation.Configuration
-public class MapperAndRestClientConfig {
+@Configuration
+public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
@@ -19,10 +19,5 @@ public class MapperAndRestClientConfig {
             }
         });
         return modelMapper;
-    }
-
-    @Bean
-    public RestClient restClient() {
-        return RestClient.builder().build();
     }
 }
