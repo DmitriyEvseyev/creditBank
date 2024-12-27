@@ -18,13 +18,6 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.xml
 
   kafka:
-    topics:
-      finish_registration,
-      create_documents,
-      send_documents,
-      send_ses,
-      credit_issued,
-      statement_denied
     producer:
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
