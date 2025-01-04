@@ -162,4 +162,25 @@ public class DealController {
             emailKafkaService.creditIssuedEmail(updateIssuedStatement);
         }
     }
+
+    @GetMapping("/admin/statement/{statementId}")
+    @Operation(summary = "получение заявки",
+            description = """
+                    Приходит statementId. Ответ - statement.""")
+    public ResponseEntity<StatementDto> getStatementDto(@PathVariable("statementId") String statementId) {
+        log.info("statementId - {}", statementId);
+        StatementDto statementDto = statementService.getStatementDto(UUID.fromString(statementId));
+        log.info("statementDto - {}", statementDto);
+        return ResponseEntity.ok(statementDto);
+    }
+
+    @GetMapping("/admin/statement")
+    @Operation(summary = "получение всех заявок",
+            description = """
+                   Ответ - List<Statement>.""")
+    public ResponseEntity<List<StatementDto>> getAllStatementDtos() {
+        List<StatementDto> statementDtoList = statementService.gelAllStatementDto();
+        log.info("statementDtoList - {}", statementDtoList);
+        return ResponseEntity.ok(statementDtoList);
+    }
 }

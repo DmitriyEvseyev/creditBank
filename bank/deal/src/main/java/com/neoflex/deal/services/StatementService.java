@@ -4,6 +4,7 @@ import com.neoflex.deal.exeptions.EntityNotFoundException;
 import com.neoflex.deal.model.dto.LoanOfferDto;
 import com.neoflex.deal.model.dto.LoanStatementRequestDto;
 import com.neoflex.deal.model.dto.SESCode;
+import com.neoflex.deal.model.dto.StatementDto;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
@@ -11,6 +12,7 @@ import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
 import com.neoflex.deal.repositories.StatementRepository;
 import com.neoflex.deal.utils.Constants;
 import com.neoflex.deal.utils.GeneratorSESCode;
+import com.neoflex.deal.utils.StatementConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,6 +36,7 @@ public class StatementService {
     private final StatementRepository statementRepository;
     private final RestClient restClient;
     private final GeneratorSESCode generatorSESCode;
+    private final StatementConverter statementConverter;
 
     public Statement createStatement(Client client,
                                      ApplicationStatusEnum applicationStatusEnum,
@@ -98,4 +101,13 @@ public class StatementService {
         String statementSESCode = statement.getSesCode();
         return statementSESCode.equals(sesCode.getCode());
      }
+  
+    public List<StatementDto> gelAllStatementDto() {
+        return  statementConverter.statementConvert(statementRepository.findAll());
+    }
+
+    public StatementDto getStatementDto(UUID statementId) {
+        Statement statement = getStatement(statementId);
+        return statementConverter.statementConvert(statement);
+    }
 }
