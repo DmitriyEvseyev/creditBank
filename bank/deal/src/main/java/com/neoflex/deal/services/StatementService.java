@@ -1,26 +1,42 @@
 package com.neoflex.deal.services;
 
 import com.neoflex.deal.exeptions.EntityNotFoundException;
+import com.neoflex.deal.model.dto.LoanOfferDto;
+import com.neoflex.deal.model.dto.LoanStatementRequestDto;
+import com.neoflex.deal.model.dto.SESCode;
+import com.neoflex.deal.model.dto.StatementDto;
 import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.entities.StatusHistory;
 import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
 import com.neoflex.deal.repositories.StatementRepository;
 import com.neoflex.deal.utils.Constants;
+import com.neoflex.deal.utils.GeneratorSESCode;
+import com.neoflex.deal.utils.StatementConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.neoflex.deal.model.enumFilds.ChangeTypeEnum.MANUAL;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
 @RequiredArgsConstructor
 public class StatementService {
+    @Value("${SESCodeLength}")
+    private Integer SESCodeLength;
     private final StatementRepository statementRepository;
+    private final RestClient restClient;
+    private final GeneratorSESCode generatorSESCode;
+    private final StatementConverter statementConverter;
 
     public Statement createStatement(Client client,
                                      ApplicationStatusEnum applicationStatusEnum,
@@ -57,5 +73,41 @@ public class StatementService {
                 .time(timestamp)
                 .changeType(MANUAL).build();
         return statusHistory;
+    }
+
+    public List<LoanOfferDto> getListOffers(Statement statement, LoanStatementRequestDto loanStatementRequestDto) {
+        var response = restClient
+                .post()
+                .uri("http://localhost:8080/calculator/offers")
+                .contentType(APPLICATION_JSON)
+                .body(loanStatementRequestDto)
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<List<LoanOfferDto>>() {
+                });
+        List<LoanOfferDto> offers = response.getBody();
+        for (LoanOfferDto offer : offers) {
+            offer.setUuid(statement.getStatementId());
+        }
+        return offers;
+    }
+
+    public Statement setSESCode(Statement statement) {
+        String SESCode = generatorSESCode.generateSESCode(SESCodeLength);
+        statement.setSesCode(SESCode);
+        return statementRepository.save(statement);
+    }
+
+    public Boolean verifySESCode(Statement statement, SESCode sesCode) {
+        String statementSESCode = statement.getSesCode();
+        return statementSESCode.equals(sesCode.getCode());
+     }
+  
+    public List<StatementDto> gelAllStatementDto() {
+        return  statementConverter.statementConvert(statementRepository.findAll());
+    }
+
+    public StatementDto getStatementDto(UUID statementId) {
+        Statement statement = getStatement(statementId);
+        return statementConverter.statementConvert(statement);
     }
 }

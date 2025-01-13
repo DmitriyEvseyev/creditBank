@@ -15,6 +15,8 @@
         <module>deal</module>
         <module>statement</module>
         <module>gateway</module>
+        <module>dossier</module>
+        <module>core</module>
     </modules>
 
     <dependencyManagement>

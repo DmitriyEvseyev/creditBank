@@ -2,6 +2,7 @@ package com.neoflex.deal.controller;
 
 import com.neoflex.deal.exeptions.EntityNotFoundException;
 import com.neoflex.deal.model.entities.Statement;
+import com.neoflex.deal.services.EmailKafkaService;
 import com.neoflex.deal.services.StatementService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import static com.neoflex.deal.model.enumFilds.ApplicationStatusEnum.CC_DENIED;
 @Slf4j
 public class GlobalExceptionHandler {
     private final StatementService statementService;
+    private final EmailKafkaService emailKafkaService;
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -71,6 +73,8 @@ public class GlobalExceptionHandler {
                 Timestamp.valueOf(LocalDateTime.now()),
                 CC_DENIED);
         log.info("statementUpdate - {}", statementUpdate);
+
+        emailKafkaService.deniedEmail(statementUpdate);
 
         log.error("HttpClientErrorException. {}", ex.getMessage());
         return new ResponseEntity<>("HttpClientErrorException. " + ex.getMessage(), HttpStatus.BAD_REQUEST);
