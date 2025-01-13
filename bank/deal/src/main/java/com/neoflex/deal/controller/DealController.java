@@ -5,26 +5,19 @@ import com.neoflex.deal.model.entities.Client;
 import com.neoflex.deal.model.entities.Credit;
 import com.neoflex.deal.model.entities.Statement;
 import com.neoflex.deal.model.enumFilds.ApplicationStatusEnum;
-import com.neoflex.deal.services.ClientService;
-import com.neoflex.deal.services.CreditService;
-import com.neoflex.deal.services.ScoringDataDtoService;
-import com.neoflex.deal.services.StatementService;
+import com.neoflex.deal.services.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +29,7 @@ public class DealController {
     private final StatementService statementService;
     private final ScoringDataDtoService scoringDataDtoService;
     private final CreditService creditService;
-    private final RestClient restClient;
+    private final EmailKafkaService emailKafkaService;
 
     @PostMapping("/statement")
     @Operation(summary = "расчёт возможных условий кредита",
@@ -53,22 +46,8 @@ public class DealController {
                 ApplicationStatusEnum.PREAPPROVAL,
                 Timestamp.valueOf(LocalDateTime.now()));
 
-        var response = restClient
-                .post()
-                .uri("http://localhost:8080/calculator/offers")
-                .contentType(APPLICATION_JSON)
-                .body(loanStatementRequestDto)
-                .retrieve()
-                .toEntity(new ParameterizedTypeReference<List<LoanOfferDto>>() {
-                });
-
-        log.info("response - {}", response);
-        List<LoanOfferDto> offers = response.getBody();
-
-        for (LoanOfferDto offer : offers) {
-            offer.setUuid(statement.getStatementId());
-            log.info("Updated offer with UUID: {}", offer);
-        }
+        List<LoanOfferDto> offers = statementService.getListOffers(statement, loanStatementRequestDto);
+        log.info("Updated offer with UUID: {}", offers);
         return ResponseEntity.ok(offers);
     }
 
@@ -87,6 +66,7 @@ public class DealController {
                 Timestamp.valueOf(LocalDateTime.now()),
                 ApplicationStatusEnum.APPROVED);
         log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.createFinishRegistrationEmail(updateStatement);
     }
 
     @PostMapping("/calculate/{statementId}")
@@ -101,27 +81,16 @@ public class DealController {
                                    @PathVariable("statementId") String statementId) {
         log.info("FinishRegistrationRequestDto - {}", finishRegistrationRequestDto);
         log.info("statementId - {}", statementId);
-        UUID statementIdUuid = UUID.fromString(statementId);
-
-        Statement statement = statementService.getStatement(statementIdUuid);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
 
         ScoringDataDto scoringDataDto = scoringDataDtoService.createScoringDataDto(finishRegistrationRequestDto, statement);
         log.info("scoringDataDto - {}", scoringDataDto);
-        Client client = statement.getClient();
-        Client clientUpdate = clientService.updateClient(client, finishRegistrationRequestDto);
-        statement.setClient(clientUpdate);
-        var response = restClient
-                .post()
-                .uri("http://localhost:8080/calculator/calc")
-                .contentType(APPLICATION_JSON)
-                .body(scoringDataDto)
-                .retrieve()
-                .toEntity(CreditDto.class);
-        CreditDto creditDto = response.getBody();
 
-        log.info("creditDto - {}", creditDto);
-        Credit credit = creditService.createCredit(creditDto);
-        log.info("credi - {}", credit);
+        Client clientUpdate = clientService.updateClient(statement.getClient(), finishRegistrationRequestDto);
+        statement.setClient(clientUpdate);
+
+        Credit credit = creditService.createCredit(scoringDataDto);
+        log.info("credit - {}", credit);
 
         statement.setCredit(credit);
         Statement updateStatement = statementService.updateStatement(
@@ -129,6 +98,69 @@ public class DealController {
                 Timestamp.valueOf(LocalDateTime.now()),
                 ApplicationStatusEnum.CC_APPROVED);
         log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.createDocumentsEmail(updateStatement);
+    }
+
+    @PostMapping("/document/{statementId}/send")
+    @Operation(summary = "запрос на отправку документов",
+            description = """ 
+                    Клиент отправляет запрос на формирование документов в МС Досье. Приходит statementId.
+                    МС Досье отправляет клиенту на почту документы.""")
+    public void sendDocuments(@PathVariable("statementId") String statementId) {
+        log.info("statementId - {}", statementId);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
+        Statement updateStatement = statementService.updateStatement(
+                statement,
+                Timestamp.valueOf(LocalDateTime.now()),
+                ApplicationStatusEnum.PREPARE_DOCUMENTS);
+        log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.sendDocumentsEmail(updateStatement);
+    }
+
+    @PostMapping("/document/{statementId}/sing")
+    @Operation(summary = "запрос на подписание документов",
+            description = """ 
+                    Приходит statementId. Если клиент согласен с условиями,
+                    МС Досье на почту отправляет код и ссылку на подписание документов,
+                    куда клиент должен отправить полученный код в МС Сделка.""")
+    public void singDocuments(@PathVariable("statementId") String statementId) {
+        log.info("statementId - {}", statementId);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
+        Statement updateStatement = statementService.setSESCode(statement);
+        log.info("updateStatement - {}", updateStatement);
+        emailKafkaService.singDocumentsEmail(updateStatement);
+    }
+
+    @PostMapping("/document/{statementId}/code")
+    @Operation(summary = "подписание документов",
+            description = """ 
+                    Приходит statementId, sesCode. Если полученный код совпадает с отправленным,
+                    МС Сделка выдает кредит (меняет статус сущности "Кредит" на ISSUED,
+                    а статус заявки на CREDIT_ISSUED.""")
+    public void verifySESCode(@RequestBody @Valid SESCode sesCode,
+                                  @PathVariable("statementId") String statementId) {
+        log.info("sesCode - {}", sesCode);
+        log.info("statementId - {}", statementId);
+        Statement statement = statementService.getStatement(UUID.fromString(statementId));
+
+        Boolean verifySESCode = statementService.verifySESCode(statement, sesCode);
+
+        if (verifySESCode) {
+            Statement updateSignedStatement = statementService.updateStatement(
+                    statement,
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    ApplicationStatusEnum.DOCUMENT_SIGNED);
+            log.info("updateSignedStatement - {}", updateSignedStatement);
+
+            Credit credit = updateSignedStatement.getCredit();
+            updateSignedStatement.setCredit(creditService.updateStatusCredit(credit));
+            Statement updateIssuedStatement = statementService.updateStatement(
+                    updateSignedStatement,
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    ApplicationStatusEnum.CREDIT_ISSUED);
+            log.info("updateIssuedStatement - {}", updateIssuedStatement);
+            emailKafkaService.creditIssuedEmail(updateIssuedStatement);
+        }
     }
 
     @GetMapping("/admin/statement/{statementId}")
