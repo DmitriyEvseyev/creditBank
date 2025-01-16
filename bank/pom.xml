@@ -10,6 +10,13 @@
 
     <packaging>pom</packaging>
 
+    <properties>
+        <java.version>20</java.version>
+        <sonar.projectKey>DmitriyEvseyev_creditBank</sonar.projectKey>
+        <sonar.organization>dmitriyevseyev</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    </properties>
+
     <modules>
         <module>calculator</module>
         <module>deal</module>
